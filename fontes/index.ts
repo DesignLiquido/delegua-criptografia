@@ -263,7 +263,7 @@ export function derivarChavePbkdf2(
  * @param tamanho Tamanho do salt em bytes (padrão: 16)
  * @returns Salt em formato hexadecimal
  */
-export function gerarSal(tamanho: number = 16): string {
+export function gerarSalt(tamanho: number = 16): string {
     return crypto.randomBytes(tamanho).toString('hex');
 }
 
@@ -288,5 +288,5 @@ export default {
     assinarRsa,
     verificarAssinaturaRsa,
     derivarChavePbkdf2,
-    gerarSal
+    gerarSalt
 };

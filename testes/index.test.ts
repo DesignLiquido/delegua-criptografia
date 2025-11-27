@@ -18,7 +18,7 @@ import {
     assinarRsa,
     verificarAssinaturaRsa,
     derivarChavePbkdf2,
-    gerarSal
+    gerarSalt
 } from '../fontes';
 
 describe('Funções de Hash', () => {
@@ -110,7 +110,7 @@ describe('Geração de Dados Aleatórios', () => {
     });
 
     it('gerarSal deve gerar salt do tamanho correto', () => {
-        const sal = gerarSal(16);
+        const sal = gerarSalt(16);
         expect(sal).toHaveLength(32); // 16 bytes = 32 caracteres hex
         expect(sal).toMatch(/^[a-f0-9]+$/);
     });
@@ -264,7 +264,7 @@ describe('Assinatura Digital RSA', () => {
 describe('Derivação de Chaves PBKDF2', () => {
     it('derivarChavePbkdf2 deve gerar chave', () => {
         const senha = 'minha_senha';
-        const sal = gerarSal();
+        const sal = gerarSalt();
         const chave = derivarChavePbkdf2(senha, sal);
         expect(chave).toBeTruthy();
         expect(chave).toHaveLength(64); // 32 bytes = 64 caracteres hex
@@ -281,15 +281,15 @@ describe('Derivação de Chaves PBKDF2', () => {
 
     it('derivarChavePbkdf2 deve gerar chaves diferentes com sais diferentes', () => {
         const senha = 'minha_senha';
-        const sal1 = gerarSal();
-        const sal2 = gerarSal();
+        const sal1 = gerarSalt();
+        const sal2 = gerarSalt();
         const chave1 = derivarChavePbkdf2(senha, sal1);
         const chave2 = derivarChavePbkdf2(senha, sal2);
         expect(chave1).not.toBe(chave2);
     });
 
     it('derivarChavePbkdf2 deve gerar chaves diferentes com senhas diferentes', () => {
-        const sal = gerarSal();
+        const sal = gerarSalt();
         const chave1 = derivarChavePbkdf2('senha1', sal);
         const chave2 = derivarChavePbkdf2('senha2', sal);
         expect(chave1).not.toBe(chave2);
@@ -297,7 +297,7 @@ describe('Derivação de Chaves PBKDF2', () => {
 
     it('derivarChavePbkdf2 deve respeitar tamanho de chave customizado', () => {
         const senha = 'minha_senha';
-        const sal = gerarSal();
+        const sal = gerarSalt();
         const chave = derivarChavePbkdf2(senha, sal, 1000, 16);
         expect(chave).toHaveLength(32); // 16 bytes = 32 caracteres hex
     });
