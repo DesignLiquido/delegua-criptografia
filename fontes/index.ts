@@ -10,7 +10,7 @@ import crypto from 'crypto';
  * @param texto O texto a ser transformado em hash
  * @returns Hash MD5 em formato hexadecimal
  */
-export function md5(texto: string): string {
+export function md5(interpretador: any, texto: string): string {
     return crypto.createHash('md5').update(texto).digest('hex');
 }
 
@@ -19,7 +19,7 @@ export function md5(texto: string): string {
  * @param texto O texto a ser transformado em hash
  * @returns Hash SHA-1 em formato hexadecimal
  */
-export function sha1(texto: string): string {
+export function sha1(interpretador: any, texto: string): string {
     return crypto.createHash('sha1').update(texto).digest('hex');
 }
 
@@ -28,7 +28,7 @@ export function sha1(texto: string): string {
  * @param texto O texto a ser transformado em hash
  * @returns Hash SHA-256 em formato hexadecimal
  */
-export function sha256(texto: string): string {
+export function sha256(interpretador: any, texto: string): string {
     return crypto.createHash('sha256').update(texto).digest('hex');
 }
 
@@ -37,7 +37,7 @@ export function sha256(texto: string): string {
  * @param texto O texto a ser transformado em hash
  * @returns Hash SHA-512 em formato hexadecimal
  */
-export function sha512(texto: string): string {
+export function sha512(interpretador: any, texto: string): string {
     return crypto.createHash('sha512').update(texto).digest('hex');
 }
 
@@ -47,7 +47,7 @@ export function sha512(texto: string): string {
  * @param chave A chave secreta para geração do HMAC
  * @returns HMAC em formato hexadecimal
  */
-export function hmacSha256(texto: string, chave: string): string {
+export function hmacSha256(interpretador: any, texto: string, chave: string): string {
     return crypto.createHmac('sha256', chave).update(texto).digest('hex');
 }
 
@@ -57,7 +57,7 @@ export function hmacSha256(texto: string, chave: string): string {
  * @param chave A chave secreta para geração do HMAC
  * @returns HMAC em formato hexadecimal
  */
-export function hmacSha512(texto: string, chave: string): string {
+export function hmacSha512(interpretador: any, texto: string, chave: string): string {
     return crypto.createHmac('sha512', chave).update(texto).digest('hex');
 }
 
@@ -66,7 +66,7 @@ export function hmacSha512(texto: string, chave: string): string {
  * @param tamanho Número de bytes a serem gerados
  * @returns Buffer com bytes aleatórios
  */
-export function gerarBytesAleatorios(tamanho: number): Buffer {
+export function gerarBytesAleatorios(interpretador: any, tamanho: number): Buffer {
     return crypto.randomBytes(tamanho);
 }
 
@@ -75,7 +75,7 @@ export function gerarBytesAleatorios(tamanho: number): Buffer {
  * @param tamanho Número de bytes (o resultado terá o dobro de caracteres)
  * @returns String hexadecimal aleatória
  */
-export function gerarStringAleatoria(tamanho: number): string {
+export function gerarStringAleatoria(interpretador: any, tamanho: number): string {
     return crypto.randomBytes(tamanho).toString('hex');
 }
 
@@ -92,7 +92,7 @@ export function gerarUuid(): string {
  * @param texto Texto a ser codificado
  * @returns String em formato Base64
  */
-export function codificarBase64(texto: string): string {
+export function codificarBase64(interpretador: any, texto: string): string {
     return Buffer.from(texto, 'utf8').toString('base64');
 }
 
@@ -101,7 +101,7 @@ export function codificarBase64(texto: string): string {
  * @param textoBase64 String em formato Base64
  * @returns Texto decodificado
  */
-export function decodificarBase64(textoBase64: string): string {
+export function decodificarBase64(interpretador: any, textoBase64: string): string {
     return Buffer.from(textoBase64, 'base64').toString('utf8');
 }
 
@@ -113,6 +113,7 @@ export function decodificarBase64(textoBase64: string): string {
  * @returns Objeto contendo o texto criptografado em Base64 e o IV usado
  */
 export function criptografarAes256(
+    interpretador: any, 
     texto: string, 
     chave: string, 
     vetorInicializacao?: Buffer
@@ -142,6 +143,7 @@ export function criptografarAes256(
  * @returns Texto descriptografado
  */
 export function descriptografarAes256(
+    interpretador: any, 
     textoCriptografado: string, 
     chave: string, 
     iv: string
@@ -164,7 +166,7 @@ export function descriptografarAes256(
  * @param tamanhoModulo Tamanho do módulo em bits (padrão: 2048)
  * @returns Objeto contendo as chaves pública e privada em formato PEM
  */
-export function gerarParChavesRsa(tamanhoModulo: number = 2048): {
+export function gerarParChavesRsa(interpretador: any, tamanhoModulo: number = 2048): {
     chavePublica: string;
     chavePrivada: string;
 } {
@@ -192,7 +194,7 @@ export function gerarParChavesRsa(tamanhoModulo: number = 2048): {
  * @param chavePublica Chave pública RSA em formato PEM
  * @returns Texto criptografado em Base64
  */
-export function criptografarRsa(texto: string, chavePublica: string): string {
+export function criptografarRsa(interpretador: any, texto: string, chavePublica: string): string {
     const buffer = Buffer.from(texto, 'utf8');
     const criptografado = crypto.publicEncrypt(chavePublica, buffer);
     return criptografado.toString('base64');
@@ -204,7 +206,7 @@ export function criptografarRsa(texto: string, chavePublica: string): string {
  * @param chavePrivada Chave privada RSA em formato PEM
  * @returns Texto descriptografado
  */
-export function descriptografarRsa(textoCriptografado: string, chavePrivada: string): string {
+export function descriptografarRsa(interpretador: any, textoCriptografado: string, chavePrivada: string): string {
     const buffer = Buffer.from(textoCriptografado, 'base64');
     const descriptografado = crypto.privateDecrypt(chavePrivada, buffer);
     return descriptografado.toString('utf8');
@@ -216,7 +218,7 @@ export function descriptografarRsa(textoCriptografado: string, chavePrivada: str
  * @param chavePrivada Chave privada RSA em formato PEM
  * @returns Assinatura digital em Base64
  */
-export function assinarRsa(texto: string, chavePrivada: string): string {
+export function assinarRsa(interpretador: any, texto: string, chavePrivada: string): string {
     const sign = crypto.createSign('SHA256');
     sign.update(texto);
     sign.end();
@@ -231,6 +233,7 @@ export function assinarRsa(texto: string, chavePrivada: string): string {
  * @returns true se a assinatura for válida, false caso contrário
  */
 export function verificarAssinaturaRsa(
+    interpretador: any, 
     texto: string, 
     assinatura: string, 
     chavePublica: string
@@ -250,6 +253,7 @@ export function verificarAssinaturaRsa(
  * @returns Chave derivada em formato hexadecimal
  */
 export function derivarChavePbkdf2(
+    interpretador: any, 
     senha: string,
     sal: string,
     iteracoes: number = 100000,
@@ -263,7 +267,7 @@ export function derivarChavePbkdf2(
  * @param tamanho Tamanho do salt em bytes (padrão: 16)
  * @returns Salt em formato hexadecimal
  */
-export function gerarSalt(tamanho: number = 16): string {
+export function gerarSalt(interpretador?: any, tamanho: number = 16): string {
     return crypto.randomBytes(tamanho).toString('hex');
 }
 
