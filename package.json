@@ -1,0 +1,52 @@
+{
+  "name": "@designliquido/delegua-criptografia",
+  "version": "0.0.0",
+  "description": "Biblioteca de criptografia para Delégua e JavaScript com nomes de métodos em português",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "testes-unitarios": "yarn jest --coverage",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "lint": "eslint fontes/**/*.ts",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DesignLiquido/delegua-criptografia.git"
+  },
+  "keywords": [
+    "delegua",
+    "criptografia",
+    "crypto",
+    "hash",
+    "encryption",
+    "português",
+    "portuguese"
+  ],
+  "author": "Design Líquido",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DesignLiquido/delegua-criptografia/issues"
+  },
+  "homepage": "https://github.com/DesignLiquido/delegua-criptografia#readme",
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.0.0"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}
