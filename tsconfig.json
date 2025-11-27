@@ -13,6 +13,5 @@
     "moduleResolution": "node",
     "resolveJsonModule": true
   },
-  "include": ["fontes/**/*"],
-  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "jest.config.ts"]
 }

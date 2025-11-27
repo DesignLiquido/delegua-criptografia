@@ -1,4 +1,4 @@
-import { assinarRsa, codificarBase64, criptografarAes256, criptografarRsa, decodificarBase64, derivarChavePbkdf2, descriptografarAes256, gerarBytesAleatorios, gerarParChavesRsa, gerarSalt, gerarUuid, hmacSha256, hmacSha512, md5, sha1, sha256, sha512, verificarAssinaturaRsa } from "./fontes";
+import { assinarRsa, codificarBase64, criptografarAes256, criptografarRsa, decodificarBase64, derivarChavePbkdf2, descriptografarAes256, gerarBytesAleatorios, gerarParChavesRsa, gerarSalt, gerarUuid, hmacSha256, hmacSha512, md5, sha1, sha256, sha512, verificarAssinaturaRsa } from "./index";
 
 export const DeleguaModuloCriptografia = {
     md5: {
