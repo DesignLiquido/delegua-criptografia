@@ -441,27 +441,31 @@ export async function criptografarAes256(
  * @returns Texto descriptografado
  */
 export async function descriptografarAes256(
-    interpretador: any, 
+    interpretador: { resolverValor: (valor: any) => any }, 
     textoCriptografado: string, 
     chave: string, 
     iv: string,
     authTag?: string
 ): Promise<string> {
+    const textoCriptografadoResolvido = interpretador.resolverValor(textoCriptografado);
+    const chaveResolvida = interpretador.resolverValor(chave);
+    const ivResolvido: string = interpretador.resolverValor(iv);
+
     if (isNode && nodeCrypto) {
         const chaveBuffer = Buffer.alloc(32);
-        chaveBuffer.write(chave.slice(0, 32));
-        const ivBuffer = Buffer.from(iv, 'hex');
+        chaveBuffer.write(chaveResolvida.slice(0, 32));
+        const ivBuffer = Buffer.from(ivResolvido, 'hex');
         
         // Se authTag não foi fornecido, assume que está concatenado no textoCriptografado
         let dados: Buffer;
         let tag: Buffer;
         
         if (authTag) {
-            dados = Buffer.from(textoCriptografado, 'base64');
+            dados = Buffer.from(textoCriptografadoResolvido, 'base64');
             tag = Buffer.from(authTag, 'hex');
         } else {
             // Tenta separar dados e tag (último elemento após split pode ser authTag)
-            dados = Buffer.from(textoCriptografado, 'base64');
+            dados = Buffer.from(textoCriptografadoResolvido, 'base64');
             tag = Buffer.alloc(16); // Tag vazia, não será usada neste caso
         }
         
@@ -477,7 +481,7 @@ export async function descriptografarAes256(
     }
     
     if (isBrowser && crypto.subtle) {
-        const chaveBuffer = stringToBuffer(chave.slice(0, 32).padEnd(32, '0'));
+        const chaveBuffer = stringToBuffer(chaveResolvida.slice(0, 32).padEnd(32, '0'));
         const cryptoKey = await crypto.subtle.importKey(
             'raw',
             chaveBuffer,
@@ -486,8 +490,8 @@ export async function descriptografarAes256(
             ['decrypt']
         );
         
-        const ivBuffer = new Uint8Array(iv.match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
-        const criptografadoBuffer = Uint8Array.from(atob(textoCriptografado), c => c.charCodeAt(0));
+        const ivBuffer = new Uint8Array(ivResolvido.match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
+        const criptografadoBuffer = Uint8Array.from(atob(textoCriptografadoResolvido), c => c.charCodeAt(0));
         
         const descriptografado = await crypto.subtle.decrypt(
             { name: 'AES-GCM', iv: ivBuffer },
@@ -570,15 +574,18 @@ export async function criptografarRsa(interpretador: any, texto: string, chavePu
  * @param chavePrivada Chave privada RSA em formato PEM (Node.js) ou CryptoKey (Browser)
  * @returns Texto descriptografado
  */
-export async function descriptografarRsa(interpretador: any, textoCriptografado: string, chavePrivada: any): Promise<string> {
-    if (isNode && nodeCrypto && typeof chavePrivada === 'string') {
-        const buffer = Buffer.from(textoCriptografado, 'base64');
-        const descriptografado = nodeCrypto.privateDecrypt(chavePrivada, buffer);
+export async function descriptografarRsa(interpretador: { resolverValor: (valor: any) => any }, textoCriptografado: any, chavePrivada: any): Promise<string> {
+    const chavePrivadaResolvida = interpretador.resolverValor(chavePrivada);
+    const textoCriptografadoResolvido = interpretador.resolverValor(textoCriptografado);
+
+    if (isNode && nodeCrypto) {
+        const buffer = Buffer.from(textoCriptografadoResolvido, 'base64');
+        const descriptografado = nodeCrypto.privateDecrypt(chavePrivadaResolvida, buffer);
         return descriptografado.toString('utf8');
     }
     
     if (isBrowser && crypto.subtle) {
-        const criptografadoBuffer = Uint8Array.from(atob(textoCriptografado), c => c.charCodeAt(0));
+        const criptografadoBuffer = Uint8Array.from(atob(textoCriptografadoResolvido), c => c.charCodeAt(0));
         const descriptografado = await crypto.subtle.decrypt(
             { name: 'RSA-OAEP' },
             chavePrivada,

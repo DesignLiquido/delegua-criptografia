@@ -21,6 +21,10 @@ import {
     gerarSalt
 } from '../fontes';
 
+const interpretadorDeMentirinha = {
+    resolverValor: (valor: any) => valor
+}
+
 describe('Funções de Hash', () => {
     const texto = 'Olá Mundo';
 
@@ -156,7 +160,7 @@ describe('Criptografia AES-256', () => {
     it('descriptografarAes256 deve recuperar texto original', async () => {
         const resultado = await criptografarAes256(undefined, texto, chave);
         const descriptografado = await descriptografarAes256(
-            undefined, 
+            interpretadorDeMentirinha, 
             resultado.textoCriptografado,
             chave,
             resultado.iv,
@@ -215,7 +219,7 @@ describe('Criptografia RSA', () => {
     it('descriptografarRsa deve recuperar texto original', async () => {
         const texto = 'Mensagem confidencial';
         const criptografado = await criptografarRsa(undefined, texto, chavePublica);
-        const descriptografado = await descriptografarRsa(undefined, criptografado, chavePrivada);
+        const descriptografado = await descriptografarRsa(interpretadorDeMentirinha, criptografado, chavePrivada);
         expect(descriptografado).toBe(texto);
     });
 
@@ -223,7 +227,7 @@ describe('Criptografia RSA', () => {
         const textos = ['Olá', 'Teste 123', 'Dados sensíveis'];
         for (const texto of textos) {
             const criptografado = await criptografarRsa(undefined, texto, chavePublica);
-            const descriptografado = await descriptografarRsa(undefined, criptografado, chavePrivada);
+            const descriptografado = await descriptografarRsa(interpretadorDeMentirinha, criptografado, chavePrivada);
             expect(descriptografado).toBe(texto);
         }
     });
