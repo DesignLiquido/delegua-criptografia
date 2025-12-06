@@ -670,6 +670,10 @@ export async function verificarAssinaturaRsa(
  * @returns Salt em formato hexadecimal
  */
 export function gerarSalt(interpretador?: any, tamanho: number = 16): string {
+    if (!tamanho) {
+        tamanho = 16;
+    }
+
     return gerarTextoAleatorio(interpretador, tamanho);
 }
 
