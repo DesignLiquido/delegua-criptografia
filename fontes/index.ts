@@ -692,6 +692,14 @@ export async function derivarChavePbkdf2(
     iteracoes: number = 100000,
     tamanhoChave: number = 32
 ): Promise<string> {
+    if (!iteracoes) {
+        iteracoes = 100000
+    }
+
+    if (!tamanhoChave) {
+        tamanhoChave = 32
+    }
+
     if (noNode && nodeCrypto) {
         return nodeCrypto.pbkdf2Sync(senha, sal, iteracoes, tamanhoChave, 'sha256').toString('hex');
     }

@@ -285,8 +285,8 @@ export const DeleguaModuloCriptografia = {
         argumentos: [
             { nome: 'senha', tipo: 'texto' },
             { nome: 'sal', tipo: 'texto' },
-            { nome: 'iteracoes', tipo: 'número', opcional: true },
-            { nome: 'tamanhoChave', tipo: 'número', opcional: true }
+            { nome: 'iteracoes', tipo: 'número', opcional: true, valorPadrao: 100000 },
+            { nome: 'tamanhoChave', tipo: 'número', opcional: true, valorPadrao: 32 }
         ],
         documentacao:
             `# \`criptografia.derivarChavePbkdf2(senha, sal, iteracoes?, tamanhoChave?)\`\n\n` +
@@ -305,7 +305,7 @@ export const DeleguaModuloCriptografia = {
         tipoRetorno: 'texto',
         funcao: gerarSalt,
         argumentos: [
-            { nome: 'tamanho', tipo: 'numero', opcional: true }
+            { nome: 'tamanho', tipo: 'numero', opcional: true, valorPadrao: 16 }
         ],
         documentacao:
             `# \`criptografia.gerarSalt(tamanho?)\`\n\n` +
