@@ -52,8 +52,8 @@ const hash = criptografia.sha256("Olá Mundo");
 console.log(hash);
 
 // Gerar string aleatória
-const randomStr = criptografia.gerarStringAleatoria(16);
-console.log(randomStr);
+const textoAleatorio = criptografia.gerarTextoAleatorio(16);
+console.log(textoAleatorio);
 ```
 
 ### ES Modules
@@ -103,13 +103,13 @@ console.log(resultado);
 - **`gerarBytesAleatorios(tamanho: number): Buffer`**  
   Gera bytes aleatórios criptograficamente seguros
 
-- **`gerarStringAleatoria(tamanho: number): string`**  
-  Gera uma string hexadecimal aleatória
+- **`gerarTextoAleatorio(tamanho: number): string`**  
+  Gera um texto aleatório composto por caracteres hexadecimais
 
 - **`gerarUuid(): string`**  
   Gera um UUID versão 4
 
-- **`gerarSal(tamanho?: number): string`**  
+- **`gerarSalt(tamanho?: number): string`**  
   Gera um salt para uso em derivação de chaves (padrão: 16 bytes)
 
 ### Codificação Base64
@@ -157,10 +157,10 @@ console.log(resultado);
 ### Exemplo 1: Hash de senha com salt
 
 ```javascript
-const { sha256, gerarSal } = require('@designliquido/delegua-criptografia');
+const { sha256, gerarSalt } = require('@designliquido/delegua-criptografia');
 
 const senha = "minha_senha_123";
-const sal = gerarSal();
+const sal = gerarSalt();
 const senhaHash = sha256(senha + sal);
 
 console.log("Salt:", sal);
@@ -242,10 +242,10 @@ console.log("Assinatura válida (alterado):", validaAlterado); // false
 ### Exemplo 5: Derivação de chave com PBKDF2
 
 ```javascript
-const { derivarChavePbkdf2, gerarSal } = require('@designliquido/delegua-criptografia');
+const { derivarChavePbkdf2, gerarSalt } = require('@designliquido/delegua-criptografia');
 
 const senha = "senha_do_usuario";
-const sal = gerarSal();
+const sal = gerarSalt();
 
 // Derivar chave da senha
 const chaveDerivada = derivarChavePbkdf2(senha, sal, 100000, 32);
@@ -272,8 +272,9 @@ console.log("Chave derivada:", chaveDerivada);
 ```
 delegua-criptografia/
 ├── fontes/
-│   └── index.ts          # Código principal
-├── dist/                 # Arquivos compilados (gerados)
+    ├── delegua-modulo.ts  # Manifesto do módulo, usado pelo núcleo e ferramentas para entender tipos e documentação
+│   └── index.ts           # Código principal
+├── dist/                  # Arquivos compilados (gerados)
 ├── package.json
 ├── tsconfig.json
 └── README.md
@@ -281,7 +282,7 @@ delegua-criptografia/
 
 ## Contribuindo
 
-Contribuições são bem-vindas! Sinta-se à vontade para abrir issues e pull requests.
+Contribuições são bem-vindas! Sinta-se à vontade para abrir _issues_ e _pull requests_.
 
 ## Licença
 

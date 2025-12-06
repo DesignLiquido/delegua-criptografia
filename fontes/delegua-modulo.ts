@@ -160,7 +160,7 @@ export const DeleguaModuloCriptografia = {
         exemploCodigo: 'criptografia.decodificarBase64("VGV4dG8gY29kaWZpY2Fkbw==")'
     },
     criptografarAes256: {
-        tipoRetorno: 'texto',
+        tipoRetorno: 'dicionário',
         funcao: criptografarAes256,
         argumentos: [
             { nome: 'texto', tipo: 'texto' },
@@ -202,7 +202,7 @@ export const DeleguaModuloCriptografia = {
         exemploCodigo: 'criptografia.descriptografarAes256(textoCriptografado, chave, iv)'
     },
     gerarParChavesRsa: {
-        tipoRetorno: 'objeto',
+        tipoRetorno: 'dicionário',
         funcao: gerarParChavesRsa,
         argumentos: [{ nome: 'tamanhoChave', tipo: 'numero' }],
         documentacao:
@@ -285,12 +285,12 @@ export const DeleguaModuloCriptografia = {
         argumentos: [
             { nome: 'senha', tipo: 'texto' },
             { nome: 'sal', tipo: 'texto' },
-            { nome: 'iteracoes', tipo: 'numero', opcional: true },
-            { nome: 'tamanhoChave', tipo: 'numero', opcional: true }
+            { nome: 'iteracoes', tipo: 'número', opcional: true },
+            { nome: 'tamanhoChave', tipo: 'número', opcional: true }
         ],
         documentacao:
             `# \`criptografia.derivarChavePbkdf2(senha, sal, iteracoes?, tamanhoChave?)\`\n\n` +
-            'Deriva uma chave a partir de uma senha usando PBKDF2 (Password-Based Key Derivation Function 2).\n' +
+            'Deriva uma chave a partir de uma senha usando PBKDF2 (Password-Based Key Derivation Function 2, ou Função de Derivação de Chave Baseada em Senha versão 2).\n' +
             '\n\n ## Exemplo de Código\n' +
             '\n\n```delegua\n' +
             'var criptografia = importar("criptografia")\n' +

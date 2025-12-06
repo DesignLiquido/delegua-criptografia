@@ -4,12 +4,12 @@
  */
 
 // Detecta o ambiente
-const isNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
-const isBrowser = typeof globalThis !== 'undefined' && typeof (globalThis as any).window !== 'undefined';
+const noNode = typeof process !== 'undefined' && process.versions != null && process.versions.node != null;
+const noNavegador = typeof globalThis !== 'undefined' && typeof (globalThis as any).window !== 'undefined';
 
 // Importa crypto do Node.js apenas se estiver em ambiente Node
 let nodeCrypto: any = null;
-if (isNode) {
+if (noNode) {
     nodeCrypto = require('crypto');
 }
 
@@ -42,11 +42,11 @@ function bufferToString(buffer: ArrayBuffer): string {
 /**
  * Implementação pura de MD5 em TypeScript
  */
-function md5Pure(text: string): string {
+function md5Puro(texto: string): string {
     // Converte string para bytes UTF-8
     const utf8Bytes: number[] = [];
-    for (let i = 0; i < text.length; i++) {
-        let charCode = text.charCodeAt(i);
+    for (let i = 0; i < texto.length; i++) {
+        let charCode = texto.charCodeAt(i);
         if (charCode < 0x80) {
             utf8Bytes.push(charCode);
         } else if (charCode < 0x800) {
@@ -55,7 +55,7 @@ function md5Pure(text: string): string {
             utf8Bytes.push(0xe0 | (charCode >> 12), 0x80 | ((charCode >> 6) & 0x3f), 0x80 | (charCode & 0x3f));
         } else {
             i++;
-            charCode = 0x10000 + (((charCode & 0x3ff) << 10) | (text.charCodeAt(i) & 0x3ff));
+            charCode = 0x10000 + (((charCode & 0x3ff) << 10) | (texto.charCodeAt(i) & 0x3ff));
             utf8Bytes.push(
                 0xf0 | (charCode >> 18),
                 0x80 | ((charCode >> 12) & 0x3f),
@@ -164,12 +164,12 @@ function md5Pure(text: string): string {
  * @returns Hash MD5 em formato hexadecimal
  */
 export function md5(interpretador: any, texto: string): string {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         return nodeCrypto.createHash('md5').update(texto).digest('hex');
     }
     
     // Implementação pura para navegadores
-    return md5Pure(texto);
+    return md5Puro(texto);
 }
 
 /**
@@ -178,11 +178,11 @@ export function md5(interpretador: any, texto: string): string {
  * @returns Hash SHA-1 em formato hexadecimal
  */
 export async function sha1(interpretador: any, texto: string): Promise<string> {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         return nodeCrypto.createHash('sha1').update(texto).digest('hex');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const buffer = stringToBuffer(texto);
         const hashBuffer = await crypto.subtle.digest('SHA-1', buffer);
         return bufferToHex(hashBuffer);
@@ -197,11 +197,11 @@ export async function sha1(interpretador: any, texto: string): Promise<string> {
  * @returns Hash SHA-256 em formato hexadecimal
  */
 export async function sha256(interpretador: any, texto: string): Promise<string> {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         return nodeCrypto.createHash('sha256').update(texto).digest('hex');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const buffer = stringToBuffer(texto);
         const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
         return bufferToHex(hashBuffer);
@@ -216,11 +216,11 @@ export async function sha256(interpretador: any, texto: string): Promise<string>
  * @returns Hash SHA-512 em formato hexadecimal
  */
 export async function sha512(interpretador: any, texto: string): Promise<string> {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         return nodeCrypto.createHash('sha512').update(texto).digest('hex');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const buffer = stringToBuffer(texto);
         const hashBuffer = await crypto.subtle.digest('SHA-512', buffer);
         return bufferToHex(hashBuffer);
@@ -236,11 +236,11 @@ export async function sha512(interpretador: any, texto: string): Promise<string>
  * @returns HMAC em formato hexadecimal
  */
 export async function hmacSha256(interpretador: any, texto: string, chave: string): Promise<string> {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         return nodeCrypto.createHmac('sha256', chave).update(texto).digest('hex');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const keyBuffer = stringToBuffer(chave);
         const cryptoKey = await crypto.subtle.importKey(
             'raw',
@@ -265,11 +265,11 @@ export async function hmacSha256(interpretador: any, texto: string, chave: strin
  * @returns HMAC em formato hexadecimal
  */
 export async function hmacSha512(interpretador: any, texto: string, chave: string): Promise<string> {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         return nodeCrypto.createHmac('sha512', chave).update(texto).digest('hex');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const keyBuffer = stringToBuffer(chave);
         const cryptoKey = await crypto.subtle.importKey(
             'raw',
@@ -293,11 +293,11 @@ export async function hmacSha512(interpretador: any, texto: string, chave: strin
  * @returns Array de bytes aleatórios
  */
 export function gerarBytesAleatorios(interpretador: any, tamanho: number): Uint8Array {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         return new Uint8Array(nodeCrypto.randomBytes(tamanho));
     }
     
-    if (isBrowser && crypto.getRandomValues) {
+    if (noNavegador && crypto.getRandomValues) {
         const buffer = new Uint8Array(tamanho);
         crypto.getRandomValues(buffer);
         return buffer;
@@ -311,7 +311,7 @@ export function gerarBytesAleatorios(interpretador: any, tamanho: number): Uint8
  * @param tamanho Número de bytes (o resultado terá o dobro de caracteres)
  * @returns String hexadecimal aleatória
  */
-export function gerarStringAleatoria(interpretador: any, tamanho: number): string {
+export function gerarTextoAleatorio(interpretador: any, tamanho: number): string {
     const bytes = gerarBytesAleatorios(interpretador, tamanho);
     return Array.from(bytes)
         .map(b => b.toString(16).padStart(2, '0'))
@@ -323,11 +323,11 @@ export function gerarStringAleatoria(interpretador: any, tamanho: number): strin
  * @returns UUID no formato padrão (ex: 'f47ac10b-58cc-4372-a567-0e02b2c3d479')
  */
 export function gerarUuid(): string {
-    if (isNode && nodeCrypto && nodeCrypto.randomUUID) {
+    if (noNode && nodeCrypto && nodeCrypto.randomUUID) {
         return nodeCrypto.randomUUID();
     }
     
-    if (isBrowser && crypto.randomUUID) {
+    if (noNavegador && crypto.randomUUID) {
         return crypto.randomUUID();
     }
     
@@ -346,11 +346,11 @@ export function gerarUuid(): string {
  * @returns String em formato Base64
  */
 export function codificarBase64(interpretador: any, texto: string): string {
-    if (isNode) {
+    if (noNode) {
         return Buffer.from(texto, 'utf8').toString('base64');
     }
     
-    if (isBrowser) {
+    if (noNavegador) {
         return btoa(unescape(encodeURIComponent(texto)));
     }
     
@@ -363,11 +363,11 @@ export function codificarBase64(interpretador: any, texto: string): string {
  * @returns Texto decodificado
  */
 export function decodificarBase64(interpretador: any, textoBase64: string): string {
-    if (isNode) {
+    if (noNode) {
         return Buffer.from(textoBase64, 'base64').toString('utf8');
     }
     
-    if (isBrowser) {
+    if (noNavegador) {
         return decodeURIComponent(escape(atob(textoBase64)));
     }
     
@@ -387,7 +387,7 @@ export async function criptografarAes256(
     chave: string, 
     vetorInicializacao?: Uint8Array
 ): Promise<{ textoCriptografado: string; iv: string; authTag?: string }> {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         const chaveBuffer = Buffer.alloc(32);
         chaveBuffer.write(chave.slice(0, 32));
         const iv = vetorInicializacao || nodeCrypto.randomBytes(12);
@@ -404,7 +404,7 @@ export async function criptografarAes256(
         };
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const chaveBuffer = stringToBuffer(chave.slice(0, 32).padEnd(32, '0'));
         const cryptoKey = await crypto.subtle.importKey(
             'raw',
@@ -451,7 +451,7 @@ export async function descriptografarAes256(
     const chaveResolvida = interpretador.resolverValor(chave);
     const ivResolvido: string = interpretador.resolverValor(iv);
 
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         const chaveBuffer = Buffer.alloc(32);
         chaveBuffer.write(chaveResolvida.slice(0, 32));
         const ivBuffer = Buffer.from(ivResolvido, 'hex');
@@ -480,7 +480,7 @@ export async function descriptografarAes256(
         return descriptografado;
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const chaveBuffer = stringToBuffer(chaveResolvida.slice(0, 32).padEnd(32, '0'));
         const cryptoKey = await crypto.subtle.importKey(
             'raw',
@@ -514,7 +514,7 @@ export async function gerarParChavesRsa(interpretador: any, tamanhoModulo: numbe
     chavePublica: any;
     chavePrivada: any;
 }> {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         const { publicKey, privateKey } = nodeCrypto.generateKeyPairSync('rsa', {
             modulusLength: tamanhoModulo,
             publicKeyEncoding: { type: 'spki', format: 'pem' },
@@ -524,7 +524,7 @@ export async function gerarParChavesRsa(interpretador: any, tamanhoModulo: numbe
         return { chavePublica: publicKey, chavePrivada: privateKey };
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const keyPair = await crypto.subtle.generateKey(
             {
                 name: 'RSA-OAEP',
@@ -549,13 +549,13 @@ export async function gerarParChavesRsa(interpretador: any, tamanhoModulo: numbe
  * @returns Texto criptografado em Base64
  */
 export async function criptografarRsa(interpretador: any, texto: string, chavePublica: any): Promise<string> {
-    if (isNode && nodeCrypto && typeof chavePublica === 'string') {
+    if (noNode && nodeCrypto && typeof chavePublica === 'string') {
         const buffer = Buffer.from(texto, 'utf8');
         const criptografado = nodeCrypto.publicEncrypt(chavePublica, buffer);
         return criptografado.toString('base64');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const textoBuffer = stringToBuffer(texto);
         const criptografado = await crypto.subtle.encrypt(
             { name: 'RSA-OAEP' },
@@ -578,13 +578,13 @@ export async function descriptografarRsa(interpretador: { resolverValor: (valor:
     const chavePrivadaResolvida = interpretador.resolverValor(chavePrivada);
     const textoCriptografadoResolvido = interpretador.resolverValor(textoCriptografado);
 
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         const buffer = Buffer.from(textoCriptografadoResolvido, 'base64');
         const descriptografado = nodeCrypto.privateDecrypt(chavePrivadaResolvida, buffer);
         return descriptografado.toString('utf8');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const criptografadoBuffer = Uint8Array.from(atob(textoCriptografadoResolvido), c => c.charCodeAt(0));
         const descriptografado = await crypto.subtle.decrypt(
             { name: 'RSA-OAEP' },
@@ -604,14 +604,14 @@ export async function descriptografarRsa(interpretador: { resolverValor: (valor:
  * @returns Assinatura digital em Base64
  */
 export async function assinarRsa(interpretador: any, texto: string, chavePrivada: any): Promise<string> {
-    if (isNode && nodeCrypto && typeof chavePrivada === 'string') {
+    if (noNode && nodeCrypto && typeof chavePrivada === 'string') {
         const sign = nodeCrypto.createSign('SHA256');
         sign.update(texto);
         sign.end();
         return sign.sign(chavePrivada, 'base64');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         // Para assinatura em navegadores, precisa gerar chaves com o algoritmo correto
         const textoBuffer = stringToBuffer(texto);
         const assinatura = await crypto.subtle.sign(
@@ -638,14 +638,14 @@ export async function verificarAssinaturaRsa(
     assinatura: string, 
     chavePublica: any
 ): Promise<boolean> {
-    if (isNode && nodeCrypto && typeof chavePublica === 'string') {
+    if (noNode && nodeCrypto && typeof chavePublica === 'string') {
         const verify = nodeCrypto.createVerify('SHA256');
         verify.update(texto);
         verify.end();
         return verify.verify(chavePublica, assinatura, 'base64');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const textoBuffer = stringToBuffer(texto);
         const assinaturaBuffer = Uint8Array.from(atob(assinatura), c => c.charCodeAt(0));
         
@@ -670,7 +670,7 @@ export async function verificarAssinaturaRsa(
  * @returns Salt em formato hexadecimal
  */
 export function gerarSalt(interpretador?: any, tamanho: number = 16): string {
-    return gerarStringAleatoria(interpretador, tamanho);
+    return gerarTextoAleatorio(interpretador, tamanho);
 }
 
 /**
@@ -688,11 +688,11 @@ export async function derivarChavePbkdf2(
     iteracoes: number = 100000,
     tamanhoChave: number = 32
 ): Promise<string> {
-    if (isNode && nodeCrypto) {
+    if (noNode && nodeCrypto) {
         return nodeCrypto.pbkdf2Sync(senha, sal, iteracoes, tamanhoChave, 'sha256').toString('hex');
     }
     
-    if (isBrowser && crypto.subtle) {
+    if (noNavegador && crypto.subtle) {
         const senhaBuffer = stringToBuffer(senha);
         const salBuffer = stringToBuffer(sal);
         
@@ -730,7 +730,7 @@ export default {
     hmacSha256,
     hmacSha512,
     gerarBytesAleatorios,
-    gerarStringAleatoria,
+    gerarTextoAleatorio,
     gerarUuid,
     codificarBase64,
     decodificarBase64,
