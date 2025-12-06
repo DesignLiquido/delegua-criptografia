@@ -507,6 +507,7 @@ export async function descriptografarAes256(
 
 /**
  * Gera um par de chaves RSA (pública e privada).
+ * No Node.js, retorna strings PEM. No navegador, retorna CryptoKey objects.
  * @param tamanhoModulo Tamanho do módulo em bits (padrão: 2048)
  * @returns Objeto contendo as chaves pública e privada
  */
@@ -525,6 +526,7 @@ export async function gerarParChavesRsa(interpretador: any, tamanhoModulo: numbe
     }
     
     if (noNavegador && crypto.subtle) {
+        // Para navegadores, geramos chaves RSA-OAEP para criptografia
         const keyPair = await crypto.subtle.generateKey(
             {
                 name: 'RSA-OAEP',
@@ -540,6 +542,45 @@ export async function gerarParChavesRsa(interpretador: any, tamanhoModulo: numbe
     }
     
     throw new Error('Geração de chaves RSA não disponível neste ambiente');
+}
+
+/**
+ * Gera um par de chaves RSA para assinatura digital.
+ * No Node.js, retorna strings PEM. No navegador, retorna CryptoKey objects.
+ * @param tamanhoModulo Tamanho do módulo em bits (padrão: 2048)
+ * @returns Objeto contendo as chaves pública e privada para assinatura
+ */
+export async function gerarParChavesRsaAssinatura(interpretador: any, tamanhoModulo: number = 2048): Promise<{
+    chavePublica: any;
+    chavePrivada: any;
+}> {
+    if (noNode && nodeCrypto) {
+        const { publicKey, privateKey } = nodeCrypto.generateKeyPairSync('rsa', {
+            modulusLength: tamanhoModulo,
+            publicKeyEncoding: { type: 'spki', format: 'pem' },
+            privateKeyEncoding: { type: 'pkcs8', format: 'pem' }
+        });
+        
+        return { chavePublica: publicKey, chavePrivada: privateKey };
+    }
+    
+    if (noNavegador && crypto.subtle) {
+        // Para navegadores, geramos chaves RSA-PSS para assinatura
+        const keyPair = await crypto.subtle.generateKey(
+            {
+                name: 'RSA-PSS',
+                modulusLength: tamanhoModulo,
+                publicExponent: new Uint8Array([1, 0, 1]),
+                hash: 'SHA-256'
+            },
+            true,
+            ['sign', 'verify']
+        );
+        
+        return { chavePublica: keyPair.publicKey, chavePrivada: keyPair.privateKey };
+    }
+    
+    throw new Error('Geração de chaves RSA para assinatura não disponível neste ambiente');
 }
 
 /**
@@ -588,7 +629,7 @@ export async function descriptografarRsa(interpretador: { resolverValor: (valor:
         const criptografadoBuffer = Uint8Array.from(atob(textoCriptografadoResolvido), c => c.charCodeAt(0));
         const descriptografado = await crypto.subtle.decrypt(
             { name: 'RSA-OAEP' },
-            chavePrivada,
+            chavePrivadaResolvida,
             criptografadoBuffer.buffer
         );
         return bufferToString(descriptografado);
@@ -599,6 +640,7 @@ export async function descriptografarRsa(interpretador: { resolverValor: (valor:
 
 /**
  * Assina digitalmente um texto usando uma chave privada RSA.
+ * IMPORTANTE: Para navegadores, use chaves geradas com gerarParChavesRsaAssinatura()
  * @param texto Texto a ser assinado
  * @param chavePrivada Chave privada RSA em formato PEM (Node.js) ou CryptoKey (Browser)
  * @returns Assinatura digital em Base64
@@ -612,7 +654,11 @@ export async function assinarRsa(interpretador: any, texto: string, chavePrivada
     }
     
     if (noNavegador && crypto.subtle) {
-        // Para assinatura em navegadores, precisa gerar chaves com o algoritmo correto
+        // Verifica se a chave é do tipo correto (RSA-PSS)
+        if (chavePrivada.algorithm && chavePrivada.algorithm.name !== 'RSA-PSS') {
+            throw new Error('Para assinatura em navegadores, use chaves geradas com gerarParChavesRsaAssinatura()');
+        }
+        
         const textoBuffer = stringToBuffer(texto);
         const assinatura = await crypto.subtle.sign(
             { name: 'RSA-PSS', saltLength: 32 },
@@ -627,6 +673,7 @@ export async function assinarRsa(interpretador: any, texto: string, chavePrivada
 
 /**
  * Verifica uma assinatura digital usando uma chave pública RSA.
+ * IMPORTANTE: Para navegadores, use chaves geradas com gerarParChavesRsaAssinatura()
  * @param texto Texto original
  * @param assinatura Assinatura digital em Base64
  * @param chavePublica Chave pública RSA em formato PEM (Node.js) ou CryptoKey (Browser)
@@ -646,6 +693,11 @@ export async function verificarAssinaturaRsa(
     }
     
     if (noNavegador && crypto.subtle) {
+        // Verifica se a chave é do tipo correto (RSA-PSS)
+        if (chavePublica.algorithm && chavePublica.algorithm.name !== 'RSA-PSS') {
+            throw new Error('Para verificação em navegadores, use chaves geradas com gerarParChavesRsaAssinatura()');
+        }
+        
         const textoBuffer = stringToBuffer(texto);
         const assinaturaBuffer = Uint8Array.from(atob(assinatura), c => c.charCodeAt(0));
         
@@ -749,6 +801,7 @@ export default {
     criptografarAes256,
     descriptografarAes256,
     gerarParChavesRsa,
+    gerarParChavesRsaAssinatura,
     criptografarRsa,
     descriptografarRsa,
     assinarRsa,

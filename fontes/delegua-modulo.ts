@@ -1,4 +1,4 @@
-import { assinarRsa, codificarBase64, criptografarAes256, criptografarRsa, decodificarBase64, derivarChavePbkdf2, descriptografarAes256, gerarBytesAleatorios, gerarParChavesRsa, gerarSalt, gerarUuid, hmacSha256, hmacSha512, md5, sha1, sha256, sha512, verificarAssinaturaRsa } from "./index";
+import { assinarRsa, codificarBase64, criptografarAes256, criptografarRsa, decodificarBase64, derivarChavePbkdf2, descriptografarAes256, gerarBytesAleatorios, gerarParChavesRsa, gerarParChavesRsaAssinatura, gerarSalt, gerarUuid, hmacSha256, hmacSha512, md5, sha1, sha256, sha512, verificarAssinaturaRsa } from "./index";
 
 export const DeleguaModuloCriptografia = {
     md5: {
@@ -214,6 +214,23 @@ export const DeleguaModuloCriptografia = {
             'var par = criptografia.gerarParChavesRsa(2048)\n' +
             `escreva(par.chavePublica) // Chave pública em formato PEM\n` +
             `escreva(par.chavePrivada) // Chave privada em formato PEM\n` +
+            '```\n',
+        exemploCodigo: 'criptografia.gerarParChavesRsa(2048)'
+    },
+    gerarParChavesRsaAssinatura: {
+        tipoRetorno: 'dicionário',
+        funcao: gerarParChavesRsaAssinatura,
+        argumentos: [{ nome: 'tamanhoModulo', tipo: 'numero' }],
+        documentacao:
+            `# \`criptografia.gerarParChavesRsaAssinatura(tamanhoModulo)\`\n\n` +
+            'Gera um par de chaves RSA (pública e privada) para assinatura digital.\n' +
+            '\n\n ## Exemplo de Código\n' +
+            'var criptografia = importar("criptografia")\n' +
+            'var par = criptografia.gerarParChavesRsaAssinatura(2048)\n' +
+            'var documento = "Texto importante"\n' +
+            'var assinatura = criptografia.assinarRsa(documento, par.chavePrivada)\n' +
+            'var valida = criptografia.verificarAssinaturaRsa(documento, assinatura, par.chavePublica)\n' +
+            `escreva(valida) // verdadeiro\n` +
             '```\n',
         exemploCodigo: 'criptografia.gerarParChavesRsa(2048)'
     },
