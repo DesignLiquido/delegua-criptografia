@@ -1,4 +1,4 @@
-import { assinarRsa, codificarBase64, criptografarAes256, criptografarRsa, decodificarBase64, derivarChavePbkdf2, descriptografarAes256, gerarBytesAleatorios, gerarParChavesRsa, gerarParChavesRsaAssinatura, gerarSalt, gerarUuid, hmacSha256, hmacSha512, md5, sha1, sha256, sha512, verificarAssinaturaRsa } from "./index";
+import { assinarRsa, cifrarXor, codificarBase64, criptografarAes256, criptografarRsa, decifrarRotN, decifrarXor, decodificarBase64, derivarChavePbkdf2, descriptografarAes256, gerarBytesAleatorios, gerarParChavesRsa, gerarParChavesRsaAssinatura, gerarSalt, gerarUuid, hmacSha256, hmacSha512, md5, rot13, rotN, sha1, sha256, sha512, verificarAssinaturaRsa } from "./index";
 
 export const DeleguaModuloCriptografia = {
     md5: {
@@ -345,5 +345,118 @@ export const DeleguaModuloCriptografia = {
             `escreva(saltCustomizado) // Salt de 32 bytes em hexadecimal\n` +
             '```\n',
         exemploCodigo: 'criptografia.gerarSalt()'
-    }
+    },
+    // Cifras Clássicas (Educacionais)
+    cifrarXor: {
+        tipoRetorno: 'texto',
+        funcao: cifrarXor,
+        argumentos: [
+            { nome: 'texto', tipo: 'texto' },
+            { nome: 'chave', tipo: 'texto' }
+        ],
+        documentacao:
+            `# \`criptografia.cifrarXor(texto, chave)\`\n\n` +
+            'Cifra um texto usando operação XOR bit a bit.\n' +
+            '⚠️ ATENÇÃO: Apenas para fins educacionais! NÃO é segura para dados sensíveis.\n\n' +
+            '## Exemplo de Código\n\n' +
+            '```delegua\n' +
+            'var criptografia = importar("criptografia")\n' +
+            'var texto = "Mensagem secreta"\n' +
+            'var chave = "minhaChave"\n' +
+            'var cifrado = criptografia.cifrarXor(texto, chave)\n' +
+            'escreva(cifrado) // Retorna em hexadecimal\n' +
+            'var original = criptografia.decifrarXor(cifrado, chave)\n' +
+            'escreva(original) // "Mensagem secreta"\n' +
+            '```\n',
+        exemploCodigo: 'criptografia.cifrarXor("Hello", "key")'
+    },
+    decifrarXor: {
+        tipoRetorno: 'texto',
+        funcao: decifrarXor,
+        argumentos: [
+            { nome: 'textoHex', tipo: 'texto' },
+            { nome: 'chave', tipo: 'texto' }
+        ],
+        documentacao:
+            `# \`criptografia.decifrarXor(textoHex, chave)\`\n\n` +
+            'Decifra um texto que foi cifrado com XOR.\n' +
+            'Como XOR é uma operação simétrica, usar a mesma chave reverte a cifragem.\n\n' +
+            '## Exemplo de Código\n\n' +
+            '```delegua\n' +
+            'var criptografia = importar("criptografia")\n' +
+            'var cifrado = "2e0b1c..." // Resultado de cifrarXor\n' +
+            'var chave = "minhaChave"\n' +
+            'var original = criptografia.decifrarXor(cifrado, chave)\n' +
+            'escreva(original)\n' +
+            '```\n',
+        exemploCodigo: 'criptografia.decifrarXor(textoCifrado, "key")'
+    },
+    rot13: {
+        tipoRetorno: 'texto',
+        funcao: rot13,
+        argumentos: [
+            { nome: 'texto', tipo: 'texto' }
+        ],
+        documentacao:
+            `# \`criptografia.rot13(texto)\`\n\n` +
+            'Aplica a cifra ROT13 que desloca cada letra em 13 posições no alfabeto.\n' +
+            '⚠️ ATENÇÃO: Apenas para fins educacionais! Muito fácil de quebrar.\n' +
+            'Como ROT13 desloca 13 posições em um alfabeto de 26 letras, ' +
+            'aplicar duas vezes retorna o texto original.\n\n' +
+            '## Exemplo de Código\n\n' +
+            '```delegua\n' +
+            'var criptografia = importar("criptografia")\n' +
+            'var texto = "Hello World"\n' +
+            'var cifrado = criptografia.rot13(texto)\n' +
+            'escreva(cifrado) // "Uryyb Jbeyq"\n' +
+            '// Aplicar novamente para decifrar\n' +
+            'var original = criptografia.rot13(cifrado)\n' +
+            'escreva(original) // "Hello World"\n' +
+            '```\n',
+        exemploCodigo: 'criptografia.rot13("Hello World")'
+    },
+    rotN: {
+        tipoRetorno: 'texto',
+        funcao: rotN,
+        argumentos: [
+            { nome: 'texto', tipo: 'texto' },
+            { nome: 'deslocamento', tipo: 'numero' }
+        ],
+        documentacao:
+            `# \`criptografia.rotN(texto, deslocamento)\`\n\n` +
+            'Cifra de César - desloca letras por N posições no alfabeto.\n' +
+            '⚠️ ATENÇÃO: Apenas para fins educacionais!\n' +
+            'Generalização do ROT13 que permite escolher o deslocamento.\n\n' +
+            '## Exemplo de Código\n\n' +
+            '```delegua\n' +
+            'var criptografia = importar("criptografia")\n' +
+            'var texto = "ABC"\n' +
+            'var cifrado = criptografia.rotN(texto, 3)\n' +
+            'escreva(cifrado) // "DEF"\n' +
+            '// Decifrar com deslocamento negativo\n' +
+            'var original = criptografia.rotN(cifrado, -3)\n' +
+            'escreva(original) // "ABC"\n' +
+            '```\n',
+        exemploCodigo: 'criptografia.rotN("Hello", 5)'
+    },
+    decifrarRotN: {
+        tipoRetorno: 'texto',
+        funcao: decifrarRotN,
+        argumentos: [
+            { nome: 'texto', tipo: 'texto' },
+            { nome: 'deslocamento', tipo: 'numero' }
+        ],
+        documentacao:
+            `# \`criptografia.decifrarRotN(texto, deslocamento)\`\n\n` +
+            'Decifra um texto cifrado com ROT-N (Cifra de César).\n' +
+            'Aplica o deslocamento inverso para recuperar o texto original.\n\n' +
+            '## Exemplo de Código\n\n' +
+            '```delegua\n' +
+            'var criptografia = importar("criptografia")\n' +
+            'var cifrado = "Khoor" // "Hello" com ROT-3\n' +
+            'var original = criptografia.decifrarRotN(cifrado, 3)\n' +
+            'escreva(original) // "Hello"\n' +
+            '```\n',
+        exemploCodigo: 'criptografia.decifrarRotN(textoCifrado, 5)'
+    },
 }

@@ -19,7 +19,12 @@ import {
     assinarRsa,
     verificarAssinaturaRsa,
     derivarChavePbkdf2,
-    gerarSalt
+    gerarSalt,
+    cifrarXor,
+    decifrarRotN,
+    decifrarXor,
+    rot13,
+    rotN
 } from '../fontes';
 
 const interpretadorDeMentirinha = {
@@ -385,5 +390,165 @@ describe('Derivação de Chaves PBKDF2', () => {
         const sal = gerarSalt();
         const chave = await derivarChavePbkdf2(undefined, senha, sal, 1000, 16);
         expect(chave).toHaveLength(32); // 16 bytes = 32 caracteres hex
+    });
+});
+
+describe('Cifra XOR', () => {
+    it('cifrarXor deve cifrar texto', () => {
+        const texto = 'Olá Mundo';
+        const chave = 'chave123';
+        const cifrado = cifrarXor(undefined, texto, chave);
+        
+        expect(cifrado).toBeTruthy();
+        expect(typeof cifrado).toBe('string');
+        expect(cifrado).toMatch(/^[a-f0-9]+$/);
+        expect(cifrado).not.toBe(texto);
+    });
+
+    it('decifrarXor deve recuperar texto original', () => {
+        const texto = 'Mensagem secreta';
+        const chave = 'minhaChave';
+        
+        const cifrado = cifrarXor(undefined, texto, chave);
+        const decifrado = decifrarXor(undefined, cifrado, chave);
+        
+        expect(decifrado).toBe(texto);
+    });
+
+    it('XOR deve ser simétrico', () => {
+        const texto = 'Teste de simetria';
+        const chave = 'abc123';
+        
+        const cifrado1 = cifrarXor(undefined, texto, chave);
+        const cifrado2 = cifrarXor(undefined, texto, chave);
+        
+        expect(cifrado1).toBe(cifrado2);
+    });
+
+    it('cifrarXor deve funcionar com caracteres especiais', () => {
+        const texto = 'Olá! 123 @#$%';
+        const chave = 'key';
+        
+        const cifrado = cifrarXor(undefined, texto, chave);
+        const decifrado = decifrarXor(undefined, cifrado, chave);
+        
+        expect(decifrado).toBe(texto);
+    });
+
+    it('cifrarXor deve lançar erro com chave vazia', () => {
+        expect(() => {
+            cifrarXor(undefined, 'texto', '');
+        }).toThrow('A chave não pode estar vazia');
+    });
+
+    it('chaves diferentes devem produzir resultados diferentes', () => {
+        const texto = 'Mesmo texto';
+        const cifrado1 = cifrarXor(undefined, texto, 'chave1');
+        const cifrado2 = cifrarXor(undefined, texto, 'chave2');
+        
+        expect(cifrado1).not.toBe(cifrado2);
+    });
+});
+
+describe('ROT13', () => {
+    it('rot13 deve cifrar letras', () => {
+        const texto = 'Hello World';
+        const cifrado = rot13(undefined, texto);
+        
+        expect(cifrado).toBe('Uryyb Jbeyq');
+    });
+
+    it('rot13 aplicado duas vezes deve retornar o original', () => {
+        const texto = 'The quick brown fox';
+        const cifrado = rot13(undefined, texto);
+        const original = rot13(undefined, cifrado);
+        
+        expect(original).toBe(texto);
+    });
+
+    it('rot13 deve preservar maiúsculas e minúsculas', () => {
+        expect(rot13(undefined, 'ABC')).toBe('NOP');
+        expect(rot13(undefined, 'abc')).toBe('nop');
+        expect(rot13(undefined, 'XyZ')).toBe('KlM');
+    });
+
+    it('rot13 não deve alterar números e símbolos', () => {
+        const texto = 'Test 123 !@# 456';
+        const cifrado = rot13(undefined, texto);
+        
+        expect(cifrado).toContain('123');
+        expect(cifrado).toContain('!@#');
+        expect(cifrado).toContain('456');
+    });
+
+    it('rot13 deve funcionar com alfabeto completo', () => {
+        const alfabeto = 'abcdefghijklmnopqrstuvwxyz';
+        const esperado = 'nopqrstuvwxyzabcdefghijklm';
+        
+        expect(rot13(undefined, alfabeto)).toBe(esperado);
+    });
+});
+
+describe('ROT-N (Cifra de César)', () => {
+    it('rotN com deslocamento 1 deve cifrar corretamente', () => {
+        expect(rotN(undefined, 'abc', 1)).toBe('bcd');
+        expect(rotN(undefined, 'xyz', 1)).toBe('yza');
+    });
+
+    it('rotN com deslocamento 13 deve ser igual a rot13', () => {
+        const texto = 'Hello World';
+        expect(rotN(undefined, texto, 13)).toBe(rot13(undefined, texto));
+    });
+
+    it('rotN deve aceitar deslocamento padrão de 13', () => {
+        const texto = 'Test';
+        expect(rotN(undefined, texto)).toBe(rotN(undefined, texto, 13));
+    });
+
+    it('decifrarRotN deve recuperar texto original', () => {
+        const texto = 'Mensagem secreta';
+        const deslocamento = 7;
+        
+        const cifrado = rotN(undefined, texto, deslocamento);
+        const decifrado = decifrarRotN(undefined, cifrado, deslocamento);
+        
+        expect(decifrado).toBe(texto);
+    });
+
+    it('rotN deve normalizar deslocamentos grandes', () => {
+        const texto = 'abc';
+        // 27 = 1 (mod 26)
+        expect(rotN(undefined, texto, 27)).toBe(rotN(undefined, texto, 1));
+        // 52 = 0 (mod 26)
+        expect(rotN(undefined, texto, 52)).toBe(texto);
+    });
+
+    it('rotN deve funcionar com deslocamento negativo', () => {
+        const texto = 'abc';
+        expect(rotN(undefined, texto, -1)).toBe('zab');
+    });
+
+    it('rotN deve preservar maiúsculas e minúsculas', () => {
+        expect(rotN(undefined, 'ABC', 1)).toBe('BCD');
+        expect(rotN(undefined, 'xyz', 1)).toBe('yza');
+    });
+
+    it('rotN não deve alterar caracteres não-alfabéticos', () => {
+        const texto = 'Test 123 !@#';
+        const cifrado = rotN(undefined, texto, 5);
+        
+        expect(cifrado).toContain('123');
+        expect(cifrado).toContain('!@#');
+        expect(cifrado).toContain(' ');
+    });
+
+    it('ciclo completo com vários deslocamentos', () => {
+        const texto = 'Criptografia é divertida!';
+        
+        for (let d = 1; d < 26; d++) {
+            const cifrado = rotN(undefined, texto, d);
+            const decifrado = decifrarRotN(undefined, cifrado, d);
+            expect(decifrado).toBe(texto);
+        }
     });
 });
