@@ -41,24 +41,32 @@ const mapaAlquimicoReverso = Object.fromEntries(Object.entries(mapaAlquimico).ma
 export function criptografarEmMeninoDoAcre(
   interpretador: any,
   texto: string,
-  opcoes: OpcoesCriptografiaMeninoDoAcre = {}
+  opcoes: OpcoesCriptografiaMeninoDoAcre = {
+    tema: 'runico', 
+    preservarMaiusculas: false, 
+    normalizar: false
+  }
 ): string {
-  const { tema = 'runico', preservarMaiusculas = false, normalizar = false } = opcoes;
-  const src = normalizar ? texto.normalize("NFKC") : texto;
+  const { tema, preservarMaiusculas, normalizar } = opcoes ?? {
+    tema: 'runico', 
+    preservarMaiusculas: false, 
+    normalizar: false
+  };
+  const origem = normalizar ? texto.normalize("NFKC") : texto;
 
-  return [...src]
-    .map((ch) => {
-      const lower = ch.toLowerCase();
-      let simb: string | undefined;
+  return [...origem]
+    .map((caracter) => {
+      const minusculo = caracter.toLowerCase();
+      let simboloResolvido: string | undefined;
 
-      if (tema === 'runico') simb = mapaRunico[lower];
-      else if (tema === 'alquimico') simb = mapaAlquimico[lower];
+      if (tema === 'runico') simboloResolvido = mapaRunico[minusculo];
+      else if (tema === 'alquimico') simboloResolvido = mapaAlquimico[minusculo];
       else if (tema === 'hibrido') {
-        simb = vogais.includes(lower) ? mapaRunico[lower] : mapaAlquimico[lower];
+        simboloResolvido = vogais.includes(minusculo) ? mapaRunico[minusculo] : mapaAlquimico[minusculo];
       }
 
-      if (simb) return simb;
-      return preservarMaiusculas ? ch : ch;
+      if (simboloResolvido) return simboloResolvido;
+      return preservarMaiusculas ? caracter : caracter;
     })
     .join("");
 }
@@ -69,9 +77,14 @@ export function criptografarEmMeninoDoAcre(
 export function descriptografarDeMeninoDoAcre(
   interpretador: any,
   textoCriptografado: string,
-  opcoes: OpcoesCriptografiaMeninoDoAcre = {}
+  opcoes: OpcoesCriptografiaMeninoDoAcre = {
+    tema: 'runico',
+    normalizar: false
+  }
 ): string {
-  const { tema = 'runico', normalizar = false } = opcoes;
+  const { tema, normalizar } = opcoes ?? {
+    tema: 'runico', normalizar: false
+  };
   const src = normalizar ? textoCriptografado.normalize("NFKC") : textoCriptografado;
 
   return [...src]
