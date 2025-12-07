@@ -1,6 +1,6 @@
 {
   "name": "@designliquido/delegua-criptografia",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Biblioteca de criptografia para Delégua e JavaScript com nomes de métodos em português",
   "main": "index.js",
   "types": "index.d.ts",
