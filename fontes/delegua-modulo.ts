@@ -1,4 +1,11 @@
-import { assinarRsa, cifrarXor, codificarBase64, criptografarAes256, criptografarRsa, decifrarRotN, decifrarXor, decodificarBase64, derivarChavePbkdf2, descriptografarAes256, gerarBytesAleatorios, gerarParChavesRsa, gerarParChavesRsaAssinatura, gerarSalt, gerarUuid, hmacSha256, hmacSha512, md5, rot13, rotN, sha1, sha256, sha512, verificarAssinaturaRsa } from "./index";
+import { md5, sha1, sha256, hmacSha256, hmacSha512, sha512 } from "./hashes";
+import { gerarBytesAleatorios, gerarTextoAleatorio, gerarUuid } from "./aleatorios";
+import { codificarBase64, decodificarBase64 } from "./base64";
+import { criptografarAes256, descriptografarAes256 } from "./aes";
+import { assinarRsa, criptografarRsa, gerarParChavesRsa, gerarParChavesRsaAssinatura, verificarAssinaturaRsa } from "./rsa";
+import { derivarChavePbkdf2 } from "./pbkdf2";
+import { cifrarXor, decifrarRotN, decifrarXor, rot13, rotN } from "./educacionais";
+import { gerarSalt } from "./salt";
 
 export const DeleguaModuloCriptografia = {
     md5: {
@@ -112,6 +119,21 @@ export const DeleguaModuloCriptografia = {
             `escreva(bytes) // Gera 16 bytes aleatórios\n` +
             '```\n',
         exemploCodigo: 'criptografia.gerarBytesAleatorios(16)'
+    },
+    gerarTextoAleatorio: {
+        tipoRetorno: 'texto',
+        funcao: gerarTextoAleatorio,
+        argumentos: [{ nome: 'tamanho', tipo: 'numero' }],
+        documentacao:
+            `# \`criptografia.gerarTextoAleatorio(tamanho)\`\n\n` +
+            'Gera uma string aleatória em formato hexadecimal.\n' +
+            '\n\n ## Exemplo de Código\n' +
+            '\n\n```delegua\n' +
+            'var criptografia = importar("criptografia")\n' +
+            'var textoAleatorio = criptografia.gerarTextoAleatorio(16)\n' +
+            `escreva(textoAleatorio) // Gera texto hexadecimal aleatório de 16 bytes\n` +
+            '```\n',
+        exemploCodigo: 'criptografia.gerarTextoAleatorio(16)'
     },
     gerarUuid: {
         tipoRetorno: 'texto',

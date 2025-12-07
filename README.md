@@ -152,6 +152,48 @@ console.log(resultado);
 - **`derivarChavePbkdf2(interpretador: any, senha: string, sal: string, iteracoes?: number, tamanhoChave?: number): Promise<string>`**  
   Deriva uma chave a partir de uma senha usando PBKDF2 (padrão: 100.000 iterações, 32 bytes)
 
+### Menino do Acre
+
+Este módulo implementa uma cifra de substituição inspirada nos símbolos criados pelo Menino do Acre, mas usando apenas caracteres já existentes no **Unicode**. São suportados três temas:
+
+- **Runico** → usa o bloco de Runas (U+16A0–U+16FF)  
+- **Alquimico** → usa o bloco de Símbolos Alquímicos (U+1F700–U+1F77F)  
+- **Hibrido** → vogais em runas, consoantes em símbolos alquímicos 
+
+Exemplos de utilização:
+
+```js
+// Importar módulo de criptografia
+var criptografia = importar('criptografia')
+
+// Texto original
+var texto = "delegua"
+
+// Criptografar com tema rúnico
+var resultadoRunico = criptografia.criptografarEmMeninoDoAcre({}, texto, { tema: "runico" })
+escreva(resultadoRunico)
+
+// Descriptografar com tema rúnico
+var originalRunico = criptografia.descriptografarDeMeninoDoAcre({}, resultadoRunico, { tema: "runico" })
+escreva(originalRunico)
+
+// Criptografar com tema alquímico
+var resultadoAlquimico = criptografia.criptografarEmMeninoDoAcre({}, texto, { tema: "alquimico" })
+escreva(resultadoAlquimico)
+
+// Descriptografar com tema alquímico
+var originalAlquimico = criptografia.descriptografarDeMeninoDoAcre({}, resultadoAlquimico, { tema: "alquimico" })
+escreva(originalAlquimico)
+
+// Criptografar com tema híbrido (vogais → runas, consoantes → alquímicos)
+var resultadoHibrido = criptografia.criptografarEmMeninoDoAcre({}, texto, { tema: "hibrido" })
+escreva(resultadoHibrido)
+
+// Descriptografar com tema híbrido
+var originalHibrido = criptografia.descriptografarDeMeninoDoAcre({}, resultadoHibrido, { tema: "hibrido" })
+escreva(originalHibrido)
+```
+
 ## Exemplos Completos
 
 ### Exemplo 1: Hash de senha com salt

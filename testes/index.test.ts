@@ -1,31 +1,11 @@
-import {
-    md5,
-    sha1,
-    sha256,
-    sha512,
-    hmacSha256,
-    hmacSha512,
-    gerarBytesAleatorios,
-    gerarTextoAleatorio,
-    gerarUuid,
-    codificarBase64,
-    decodificarBase64,
-    criptografarAes256,
-    descriptografarAes256,
-    gerarParChavesRsa,
-    gerarParChavesRsaAssinatura,
-    criptografarRsa,
-    descriptografarRsa,
-    assinarRsa,
-    verificarAssinaturaRsa,
-    derivarChavePbkdf2,
-    gerarSalt,
-    cifrarXor,
-    decifrarRotN,
-    decifrarXor,
-    rot13,
-    rotN
-} from '../fontes';
+import { md5, sha1, sha256, sha512, hmacSha256, hmacSha512 } from '../fontes/hashes';
+import { gerarBytesAleatorios, gerarTextoAleatorio, gerarUuid } from '../fontes/aleatorios';
+import { codificarBase64, decodificarBase64 } from '../fontes/base64';
+import { criptografarAes256, descriptografarAes256 } from '../fontes/aes';
+import { gerarParChavesRsa, gerarParChavesRsaAssinatura, criptografarRsa, descriptografarRsa, assinarRsa, verificarAssinaturaRsa } from '../fontes/rsa';
+import { derivarChavePbkdf2 } from '../fontes/pbkdf2';
+import { gerarSalt } from '../fontes/salt';
+import { cifrarXor, decifrarXor, rot13, rotN, decifrarRotN } from '../fontes/educacionais';
 
 const interpretadorDeMentirinha = {
     resolverValor: (valor: any) => valor
