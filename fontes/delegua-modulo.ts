@@ -6,6 +6,7 @@ import { assinarRsa, criptografarRsa, gerarParChavesRsa, gerarParChavesRsaAssina
 import { derivarChavePbkdf2 } from "./pbkdf2";
 import { cifrarXor, decifrarRotN, decifrarXor, rot13, rotN } from "./educacionais";
 import { gerarSalt } from "./salt";
+import { criptografarEmMeninoDoAcre, descriptografarDeMeninoDoAcre } from "./menino-do-acre";
 
 export const DeleguaModuloCriptografia = {
     md5: {
@@ -481,4 +482,42 @@ export const DeleguaModuloCriptografia = {
             '```\n',
         exemploCodigo: 'criptografia.decifrarRotN(textoCifrado, 5)'
     },
+    criptografarEmMeninoDoAcre: {
+        tipoRetorno: 'texto',
+        funcao: criptografarEmMeninoDoAcre,
+        argumentos: [
+            { nome: 'texto', tipo: 'texto' },
+            { nome: 'opcoes', tipo: 'dicionário', opcional: true }
+        ],
+        documentacao:
+            `# \`criptografia.criptografarEmMeninoDoAcre(texto)\`\n\n` +
+            'Criptografa texto latino (a–z, A–Z) em símbolos do tema escolhido (rúnico ou alquímico).' +
+            '\n\n ## Exemplo de Código\n' +
+            '\n\n```delegua\n' +
+            'var criptografia = importar("criptografia")\n' +
+            'var texto = "Busquem conhecimento"\n' +
+            `var cifrado = criptografia.criptografarEmMeninoDoAcre(texto, {"tema": "alquimico"})\n` +
+            `escreva(cifrado) // Texto criptografado em símbolos\n` +
+            '```\n',
+        exemploCodigo: 'criptografia.criptografarEmMeninoDoAcre(texto)'
+    },
+    descriptografarDeMeninoDoAcre: {
+        tipoRetorno: 'texto',
+        funcao: descriptografarDeMeninoDoAcre,
+        argumentos: [
+            { nome: 'textoCifrado', tipo: 'texto' },
+            { nome: 'opcoes', tipo: 'dicionário', opcional: true }
+        ],
+        documentacao:
+            `# \`criptografia.descriptografarDeMeninoDoAcre(textoCifrado)\`\n\n` +
+            'Descriptografa texto cifrado em símbolos do tema escolhido (rúnico ou alquímico) de volta para texto latino.' +
+            '\n\n ## Exemplo de Código\n' +
+            '\n\n```delegua\n' +
+            'var criptografia = importar("criptografia")\n' +
+            'var cifrado = "⚛️🔺..." // Texto cifrado em símbolos\n' +
+            `var original = criptografia.descriptografarDeMeninoDoAcre(cifrado, {"tema": "alquimico"})\n` +
+            `escreva(original) // "Busquem conhecimento"\n` +
+            '```\n',
+        exemploCodigo: 'criptografia.descriptografarDeMeninoDoAcre(textoCifrado)'
+    }
 }

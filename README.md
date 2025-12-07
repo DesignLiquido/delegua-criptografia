@@ -471,66 +471,6 @@ const exemplo = cifrarXor(undefined, "teste teste teste", "k");
 analisarXor(exemplo);
 ```
 
-### Exemplo 10: Projeto educacional completo - Comparador de cifras
-
-```delegua
-var criptografia = importar('criptografia')
-
-funcao compararCifras(textoOriginal) {
-    escreva("╔══════════════════════════════════════╗")
-    escreva("║  Comparador de Métodos de Cifragem  ║")
-    escreva("╚══════════════════════════════════════╝")
-    escreva("\nTexto original: " + textoOriginal)
-    escreva("Tamanho: " + textoOriginal.tamanho() + " caracteres")
-    
-    // ROT13
-    escreva("\n--- ROT13 (Cifra de Substituição) ---")
-    var tempoInicio = agora()
-    var rot13Cifrado = criptografia.rot13(textoOriginal)
-    var tempoRot13 = agora() - tempoInicio
-    escreva("Cifrado: " + rot13Cifrado)
-    escreva("Tempo: " + tempoRot13 + "ms")
-    escreva("Segurança: ⭐ (Muito fraca)")
-    escreva("Uso: Apenas educacional/ofuscação leve")
-    
-    // XOR
-    escreva("\n--- XOR (Operação Bit a Bit) ---")
-    tempoInicio = agora()
-    var xorCifrado = criptografia.cifrarXor(textoOriginal, "chave")
-    var tempoXor = agora() - tempoInicio
-    escreva("Cifrado: " + xorCifrado.substring(0, 50) + "...")
-    escreva("Tempo: " + tempoXor + "ms")
-    escreva("Segurança: ⭐⭐ (Fraca)")
-    escreva("Uso: Educacional, ofuscação simples")
-    
-    // AES-256
-    escreva("\n--- AES-256-GCM (Moderno) ---")
-    tempoInicio = agora()
-    var aesResultado = criptografia.criptografarAes256(
-        textoOriginal, 
-        "minha-chave-super-secreta-aqui!"
-    )
-    var tempoAes = agora() - tempoInicio
-    escreva("Cifrado: " + aesResultado.textoCriptografado.substring(0, 50) + "...")
-    escreva("IV: " + aesResultado.iv)
-    escreva("Tempo: " + tempoAes + "ms")
-    escreva("Segurança: ⭐⭐⭐⭐⭐ (Muito forte)")
-    escreva("Uso: Produção, dados sensíveis reais")
-    
-    escreva("\n╔═══════════════════════════════╗")
-    escreva("║  CONCLUSÃO                    ║")
-    escreva("╠═══════════════════════════════╣")
-    escreva("║  ✅ Use AES-256 em produção   ║")
-    escreva("║  📚 ROT13/XOR para aprender   ║")
-    escreva("║  ❌ NUNCA use ROT13/XOR para  ║")
-    escreva("║     dados sensíveis reais     ║")
-    escreva("╚═══════════════════════════════╝")
-}
-
-// Executar comparação
-compararCifras("Este é um texto de exemplo para demonstração de criptografia!")
-```
-
 ## Compatibilidade entre Ambientes
 
 Esta biblioteca foi projetada para funcionar de forma **unificada** em Node.js e navegadores:
