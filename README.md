@@ -5,11 +5,13 @@ Biblioteca de criptografia para Delégua e JavaScript com nomes de métodos em p
 Esta biblioteca oferece funcionalidades criptográficas unificadas que funcionam tanto em Node.js quanto em navegadores, com uma interface em português para facilitar o uso por desenvolvedores que programam em Delégua.
 
 ## Instalação
+
 ```bash
 npm install @designliquido/delegua-criptografia
 ```
 
 ## Uso com Delégua
+
 ```delegua
 var criptografia = importar('criptografia')
 
@@ -37,11 +39,16 @@ var textoOriginal = criptografia.descriptografarAes256(
     resultado.iv
 )
 escreva(textoOriginal)
+
+// Cifras clássicas (educacionais)
+var cifrado = criptografia.rot13("Hello World")
+escreva(cifrado) // "Uryyb Jbeyq"
 ```
 
 ## Uso com JavaScript/TypeScript
 
 ### CommonJS
+
 ```javascript
 const criptografia = require('@designliquido/delegua-criptografia');
 
@@ -55,6 +62,7 @@ console.log(textoAleatorio);
 ```
 
 ### ES Modules
+
 ```typescript
 import { sha256, gerarUuid, criptografarAes256 } from '@designliquido/delegua-criptografia';
 
@@ -152,13 +160,34 @@ console.log(resultado);
 - **`derivarChavePbkdf2(interpretador: any, senha: string, sal: string, iteracoes?: number, tamanhoChave?: number): Promise<string>`**  
   Deriva uma chave a partir de uma senha usando PBKDF2 (padrão: 100.000 iterações, 32 bytes)
 
-### Menino do Acre
+### Cifras Clássicas (Educacionais) 🎓
+
+⚠️ **IMPORTANTE**: As funções abaixo são apenas para fins educacionais e demonstração de conceitos de criptografia. **NÃO devem ser usadas para proteger dados sensíveis reais!**
+
+- **`cifrarXor(interpretador: any, texto: string, chave: string): string`**  
+  Cifra texto usando operação XOR bit a bit. Retorna resultado em hexadecimal.
+
+- **`decifrarXor(interpretador: any, textoHex: string, chave: string): string`**  
+  Decifra texto cifrado com XOR. Como XOR é simétrico, a operação é reversível com a mesma chave.
+
+- **`rot13(interpretador: any, texto: string): string`**  
+  Aplica ROT13 (desloca letras em 13 posições). Aplicar duas vezes retorna o original.
+
+- **`rotN(interpretador: any, texto: string, deslocamento: number): string`**  
+  Cifra de César com deslocamento customizado. Generalização do ROT13.
+
+- **`decifrarRotN(interpretador: any, texto: string, deslocamento: number): string`**  
+  Decifra texto cifrado com ROT-N aplicando deslocamento inverso.
+
+#### Menino do Acre
 
 Este módulo implementa uma cifra de substituição inspirada nos símbolos criados pelo Menino do Acre, mas usando apenas caracteres já existentes no **Unicode**. São suportados três temas:
 
 - **Runico** → usa o bloco de Runas (U+16A0–U+16FF)  
 - **Alquimico** → usa o bloco de Símbolos Alquímicos (U+1F700–U+1F77F)  
-- **Hibrido** → vogais em runas, consoantes em símbolos alquímicos 
+- **Hibrido** → vogais em runas, consoantes em símbolos alquímicos
+
+Aqui implementamos nossa versão da criptografia do Menino do Acre com fins educacionais e culturais. 
 
 Exemplos de utilização:
 
@@ -197,6 +226,7 @@ escreva(originalHibrido)
 ## Exemplos Completos
 
 ### Exemplo 1: Hash de senha com salt
+
 ```javascript
 const { sha256, gerarSalt } = require('@designliquido/delegua-criptografia');
 
@@ -209,6 +239,7 @@ console.log("Hash:", senhaHash);
 ```
 
 ### Exemplo 2: Criptografia simétrica AES-256-GCM
+
 ```javascript
 const { criptografarAes256, descriptografarAes256 } = require('@designliquido/delegua-criptografia');
 
@@ -233,6 +264,7 @@ console.log("Descriptografado:", mensagemOriginal);
 ```
 
 ### Exemplo 3: Criptografia assimétrica RSA (Node.js e Navegador)
+
 ```javascript
 const { 
     gerarParChavesRsa, 
@@ -257,6 +289,7 @@ console.log("Descriptografado:", descriptografado);
 ```
 
 ### Exemplo 4: Assinatura digital (Node.js e Navegador)
+
 ```javascript
 const { 
     gerarParChavesRsaAssinatura,  // Use esta função para assinatura!
@@ -284,6 +317,7 @@ console.log("Assinatura válida (alterado):", validaAlterado); // false
 ```
 
 ### Exemplo 5: Derivação de chave com PBKDF2
+
 ```javascript
 const { derivarChavePbkdf2, gerarSalt } = require('@designliquido/delegua-criptografia');
 
@@ -300,6 +334,7 @@ console.log("Chave derivada:", chaveDerivada);
 ```
 
 ### Exemplo 6: Uso completo em Delégua
+
 ```delegua
 var criptografia = importar('criptografia')
 
@@ -320,6 +355,180 @@ var documento = "Contrato importante"
 var assinatura = criptografia.assinarRsa(documento, parAssinatura.chavePrivada)
 var valida = criptografia.verificarAssinaturaRsa(documento, assinatura, parAssinatura.chavePublica)
 escreva("Assinatura válida: " + valida)
+```
+
+### Exemplo 7: Cifras clássicas (Educacionais) 🎓
+
+```javascript
+const { cifrarXor, decifrarXor, rot13, rotN, decifrarRotN } = require('@designliquido/delegua-criptografia');
+
+// XOR - Operação bit a bit
+const mensagem = "Olá Mundo";
+const chave = "segredo";
+
+const xorCifrado = cifrarXor(undefined, mensagem, chave);
+console.log("XOR Cifrado:", xorCifrado); // Hexadecimal
+
+const xorDecifrado = decifrarXor(undefined, xorCifrado, chave);
+console.log("XOR Decifrado:", xorDecifrado); // "Olá Mundo"
+
+// ROT13 - Desloca 13 posições
+const textoRot13 = "Hello World";
+const cifradoRot13 = rot13(undefined, textoRot13);
+console.log("ROT13:", cifradoRot13); // "Uryyb Jbeyq"
+
+// Aplicar novamente para decifrar
+const originalRot13 = rot13(undefined, cifradoRot13);
+console.log("Original:", originalRot13); // "Hello World"
+
+// ROT-N (Cifra de César) - Deslocamento customizado
+const textoCesar = "ATAQUE AO AMANHECER";
+const deslocamento = 3;
+
+const cifradoCesar = rotN(undefined, textoCesar, deslocamento);
+console.log("César (ROT-3):", cifradoCesar); // "DWDTXH DR DPDQKHFHU"
+
+const originalCesar = decifrarRotN(undefined, cifradoCesar, deslocamento);
+console.log("Decifrado:", originalCesar); // "ATAQUE AO AMANHECER"
+```
+
+### Exemplo 8: Aplicações educacionais em Delégua
+
+```delegua
+var criptografia = importar('criptografia')
+
+// Demonstração de ROT13
+escreva("=== Demonstração ROT13 ===")
+var mensagem = "The quick brown fox"
+var cifrado = criptografia.rot13(mensagem)
+escreva("Original: " + mensagem)
+escreva("Cifrado:  " + cifrado)
+escreva("Decifrado: " + criptografia.rot13(cifrado))
+
+// Demonstração de Cifra de César
+escreva("\n=== Cifra de César ===")
+var segredo = "MENSAGEM SECRETA"
+para (var d = 1; d <= 25; d++) {
+    var resultado = criptografia.rotN(segredo, d)
+    escreva("ROT-" + d + ": " + resultado)
+}
+
+// Demonstração de XOR
+escreva("\n=== Cifra XOR ===")
+var texto = "Dados importantes"
+var chave = "chave123"
+var xorCifrado = criptografia.cifrarXor(texto, chave)
+escreva("Cifrado (hex): " + xorCifrado)
+escreva("Decifrado: " + criptografia.decifrarXor(xorCifrado, chave))
+
+// Comparação: segurança fraca vs. forte
+escreva("\n=== Comparação de Segurança ===")
+escreva("❌ Fraco (ROT13): Facilmente quebrável por inspeção")
+escreva("❌ Fraco (XOR simples): Vulnerável a análise de frequência")
+escreva("✅ Forte (AES-256): Padrão da indústria, altamente seguro")
+escreva("✅ Forte (RSA-2048): Seguro para criptografia assimétrica")
+```
+
+### Exemplo 9: Quebrando cifras clássicas (Análise Criptográfica) 🔓
+
+```javascript
+const { rot13, rotN } = require('@designliquido/delegua-criptografia');
+
+// Exemplo educacional: quebrar ROT-N por força bruta
+function quebrarRotN(textoCifrado) {
+    console.log("Tentando quebrar:", textoCifrado);
+    console.log("\nTodas as possibilidades (ROT-1 até ROT-25):\n");
+    
+    for (let deslocamento = 1; deslocamento <= 25; deslocamento++) {
+        const tentativa = rotN(undefined, textoCifrado, -deslocamento);
+        console.log(`ROT-${deslocamento}: ${tentativa}`);
+    }
+}
+
+// Texto cifrado desconhecido
+const cifrado = "Khoor Zruog"; // "Hello World" com ROT-3
+quebrarRotN(cifrado);
+
+// Análise de frequência para XOR (mais avançado)
+function analisarXor(textoCifradoHex) {
+    console.log("\n=== Análise de Frequência XOR ===");
+    console.log("Texto cifrado (hex):", textoCifradoHex);
+    
+    // Converter hex para bytes
+    const bytes = [];
+    for (let i = 0; i < textoCifradoHex.length; i += 2) {
+        bytes.push(parseInt(textoCifradoHex.substr(i, 2), 16));
+    }
+    
+    // Analisar padrões (exemplo simplificado)
+    console.log("\nPrimeiros bytes:", bytes.slice(0, 10));
+    console.log("\nDica: Em texto real, espaços (0x20) são comuns.");
+    console.log("Se você XOR um byte com 0x20, pode descobrir a chave!");
+}
+
+const { cifrarXor } = require('@designliquido/delegua-criptografia');
+const exemplo = cifrarXor(undefined, "teste teste teste", "k");
+analisarXor(exemplo);
+```
+
+### Exemplo 10: Projeto educacional completo - Comparador de cifras
+
+```delegua
+var criptografia = importar('criptografia')
+
+funcao compararCifras(textoOriginal) {
+    escreva("╔══════════════════════════════════════╗")
+    escreva("║  Comparador de Métodos de Cifragem  ║")
+    escreva("╚══════════════════════════════════════╝")
+    escreva("\nTexto original: " + textoOriginal)
+    escreva("Tamanho: " + textoOriginal.tamanho() + " caracteres")
+    
+    // ROT13
+    escreva("\n--- ROT13 (Cifra de Substituição) ---")
+    var tempoInicio = agora()
+    var rot13Cifrado = criptografia.rot13(textoOriginal)
+    var tempoRot13 = agora() - tempoInicio
+    escreva("Cifrado: " + rot13Cifrado)
+    escreva("Tempo: " + tempoRot13 + "ms")
+    escreva("Segurança: ⭐ (Muito fraca)")
+    escreva("Uso: Apenas educacional/ofuscação leve")
+    
+    // XOR
+    escreva("\n--- XOR (Operação Bit a Bit) ---")
+    tempoInicio = agora()
+    var xorCifrado = criptografia.cifrarXor(textoOriginal, "chave")
+    var tempoXor = agora() - tempoInicio
+    escreva("Cifrado: " + xorCifrado.substring(0, 50) + "...")
+    escreva("Tempo: " + tempoXor + "ms")
+    escreva("Segurança: ⭐⭐ (Fraca)")
+    escreva("Uso: Educacional, ofuscação simples")
+    
+    // AES-256
+    escreva("\n--- AES-256-GCM (Moderno) ---")
+    tempoInicio = agora()
+    var aesResultado = criptografia.criptografarAes256(
+        textoOriginal, 
+        "minha-chave-super-secreta-aqui!"
+    )
+    var tempoAes = agora() - tempoInicio
+    escreva("Cifrado: " + aesResultado.textoCriptografado.substring(0, 50) + "...")
+    escreva("IV: " + aesResultado.iv)
+    escreva("Tempo: " + tempoAes + "ms")
+    escreva("Segurança: ⭐⭐⭐⭐⭐ (Muito forte)")
+    escreva("Uso: Produção, dados sensíveis reais")
+    
+    escreva("\n╔═══════════════════════════════╗")
+    escreva("║  CONCLUSÃO                    ║")
+    escreva("╠═══════════════════════════════╣")
+    escreva("║  ✅ Use AES-256 em produção   ║")
+    escreva("║  📚 ROT13/XOR para aprender   ║")
+    escreva("║  ❌ NUNCA use ROT13/XOR para  ║")
+    escreva("║     dados sensíveis reais     ║")
+    escreva("╚═══════════════════════════════╝")
+}
+
+// Executar comparação
+compararCifras("Este é um texto de exemplo para demonstração de criptografia!")
 ```
 
 ## Compatibilidade entre Ambientes
@@ -348,24 +557,85 @@ A criptografia AES-256 tem **API idêntica** em ambos os ambientes:
 
 ⚠️ **Notas importantes de segurança:**
 
-- **MD5 e SHA-1** não devem ser usados para fins de segurança críticos, apenas para checksums simples
-- Use **SHA-256** ou **SHA-512** para hashing seguro
-- Para armazenar senhas, sempre use **salt** único por senha e considere usar **PBKDF2** ou bibliotecas especializadas como bcrypt
-- Chaves AES-256 devem ter **exatamente 32 caracteres** (256 bits)
-- Nunca compartilhe chaves privadas RSA
-- Use **HMAC** quando precisar verificar a integridade e autenticidade de mensagens
-- **AES-256-GCM** é mais seguro que CBC pois fornece autenticação integrada
+### Algoritmos Seguros para Produção
+
+- **SHA-256** ou **SHA-512** para hashing seguro
+- **AES-256-GCM** para criptografia simétrica (é mais seguro que CBC pois fornece autenticação integrada)
+- **RSA-2048** ou superior para criptografia assimétrica
+- **HMAC-SHA256/512** para verificar integridade e autenticidade de mensagens
+- **PBKDF2** com 100.000+ iterações para derivar chaves de senhas
+
+### Algoritmos NÃO Seguros (Apenas Educacionais)
+
+- **MD5** e **SHA-1**: Vulneráveis a colisões, use apenas para checksums não-críticos
+- **ROT13**: Trivialmente quebrável, apenas para ofuscação leve ou jogos
+- **XOR simples**: Vulnerável a análise de frequência e ataques conhecidos
+- **ROT-N (Cifra de César)**: Apenas 25 possibilidades, quebrável por força bruta em segundos
+
+### Por Que Cifras Clássicas São Fracas?
+
+#### ROT13 e Cifra de César
+- Apenas **25 possibilidades** (ROT-1 até ROT-25)
+- Pode ser quebrado por **força bruta** em menos de 1 segundo
+- Não usa chave secreta verdadeira
+- **Exemplo**: Se você vê "Uryyb", teste ROT-1, ROT-2... até encontrar "Hello"
+
+#### XOR Simples
+- Vulnerável a **ataques de texto conhecido** (_known-plaintext attack_)
+- Se o atacante sabe parte do texto original, pode descobrir a chave
+- **Análise de frequência**: Letras comuns (como 'e', 'a') revelam padrões
+- **Exemplo**: Se "hello" vira "2d0b0f", e sabemos que 'h' = 0x68, podemos calcular a chave
+
+#### Por Que São Úteis Para Aprender? 🎓
+1. **Conceitos fundamentais**: Ensinam substituição, transposição, operações bit a bit
+2. **Fáceis de entender**: Não requerem matemática avançada
+3. **Demonstram fraquezas**: Mostram por que criptografia moderna é complexa
+4. **Base histórica**: ROT13 vem do ROT-47, usado no Unix; César foi usado há 2000 anos!
+
+### Melhores Práticas
+
+- Para **armazenar senhas**: Use **PBKDF2** com _salt_ único por senha (ou bcrypt/scrypt/argon2)
+- Para **criptografia de dados**: Use **AES-256-GCM** com chaves de 32 caracteres
+- Para **chaves AES**: Use `derivarChavePbkdf2` ou `gerarTextoAleatorio` para gerar chaves fortes
+- Para **verificar integridade**: Use **HMAC-SHA256**
+- **Nunca** compartilhe chaves privadas RSA
+- **Nunca** reutilize o mesmo IV (vetor de inicialização) com a mesma chave AES
 - Em navegadores, **sempre use funções separadas** para gerar chaves de criptografia vs. assinatura
 
+### Quando Usar Cada Algoritmo
+
+| Uso                   | Algoritmo Recomendado | Evitar                  |
+|-----------------------|-----------------------|-------------------------|
+| Senha do usuário      | PBKDF2 (100k+ iter.)  | MD5, SHA-1 sem salt     |
+| Criptografar arquivo  | AES-256-GCM           | XOR, ROT13              |
+| Assinatura digital    | RSA-PSS 2048+         | Nenhuma assinatura      |
+| Verificar integridade | HMAC-SHA256           | CRC32, checksum simples |
+| Aprender conceitos    | ROT13, XOR, César     | (Usar em produção)      |
+| Ofuscação leve*       | Base64 + ROT13        | (Para dados sensíveis)  |
+
+*Ofuscação não é segurança! Use apenas para tornar dados não-óbvios, nunca para proteção real.
+
 ## Estrutura do Projeto
+
 ```
 delegua-criptografia/
 ├── fontes/
-│   ├── delegua-modulo.ts  # Manifesto do módulo
-│   └── index.ts           # Código principal
+|   ├── aes.ts 
+|   ├── aleatorios.ts 
+|   ├── base64.ts 
+|   ├── comum.ts 
+│   ├── delegua-modulo.ts      # Manifesto do módulo
+|   ├── educacionais.ts 
+|   ├── hashes.ts 
+│   ├── index.ts               # Ponto de entrada
+|   ├── menino-do-acre.ts 
+|   ├── pbkdf2.ts 
+|   ├── rsa.ts 
+|   └── salt.ts
 ├── testes/
-│   └── index.test.ts      # Testes unitários
-├── dist/                  # Arquivos compilados (gerados)
+│   ├── index.test.ts          # Testes unitários
+|   └── menino-do-acre.test.ts
+├── dist/                      # Arquivos compilados (gerados)
 ├── package.json
 ├── tsconfig.json
 └── README.md
