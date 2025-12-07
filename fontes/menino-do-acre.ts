@@ -15,15 +15,20 @@ export interface OpcoesCriptografiaMeninoDoAcre {
 // --- Mapas ---
 const vogais = ['a', 'e', 'i', 'o', 'u'];
 
+// --- Mapeamento Rúnico ---
 const mapaRunico: Record<string, string> = {
-  a: "ᚠ", e: "ᚱ", i: "ᚺ", o: "ᛉ", u: "ᛚ",
+  a: "ᚠ", b: "ᚢ", c: "ᚦ", d: "ᚨ", e: "ᚱ", f: "ᚲ", g: "ᚷ",
+  h: "ᚹ", i: "ᚺ", j: "ᚾ", k: "ᛁ", l: "ᛃ", m: "ᛇ", n: "ᛈ",
+  o: "ᛉ", p: "ᛋ", q: "ᛏ", r: "ᛒ", s: "ᛖ", t: "ᛗ", u: "ᛚ",
+  v: "ᛜ", w: "ᛞ", x: "ᛟ", y: "ᚤ", z: "ᚣ",
 };
 
+// --- Mapeamento Alquímico ---
 const mapaAlquimico: Record<string, string> = {
-  b: "🜂", c: "🜃", d: "🜄", f: "🜆", g: "🜇", h: "🜈",
-  j: "🜊", k: "🜋", l: "🜌", m: "🜍", n: "🜎", p: "🜐",
-  q: "🜑", r: "🜒", s: "🜓", t: "🜔", v: "🜖", w: "🜗",
-  x: "🜘", y: "🜙", z: "🜚",
+  a: "🜁", b: "🜂", c: "🜃", d: "🜄", e: "🜅", f: "🜆", g: "🜇",
+  h: "🜈", i: "🜉", j: "🜊", k: "🜋", l: "🜌", m: "🜍", n: "🜎",
+  o: "🜏", p: "🜐", q: "🜑", r: "🜒", s: "🜓", t: "🜔", u: "🜕",
+  v: "🜖", w: "🜗", x: "🜘", y: "🜙", z: "🜚",
 };
 
 // --- Reversos ---
