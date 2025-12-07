@@ -196,30 +196,30 @@ Exemplos de utilização:
 var criptografia = importar('criptografia')
 
 // Texto original
-var texto = "delegua"
+var meuTexto = "delegua"
 
 // Criptografar com tema rúnico
-var resultadoRunico = criptografia.criptografarEmMeninoDoAcre({}, texto, { tema: "runico" })
+var resultadoRunico = criptografia.criptografarEmMeninoDoAcre(meuTexto, { "tema": "runico" })
 escreva(resultadoRunico)
 
 // Descriptografar com tema rúnico
-var originalRunico = criptografia.descriptografarDeMeninoDoAcre({}, resultadoRunico, { tema: "runico" })
+var originalRunico = criptografia.descriptografarDeMeninoDoAcre(resultadoRunico, { "tema": "runico" })
 escreva(originalRunico)
 
 // Criptografar com tema alquímico
-var resultadoAlquimico = criptografia.criptografarEmMeninoDoAcre({}, texto, { tema: "alquimico" })
+var resultadoAlquimico = criptografia.criptografarEmMeninoDoAcre(meuTexto, { "tema": "alquimico" })
 escreva(resultadoAlquimico)
 
 // Descriptografar com tema alquímico
-var originalAlquimico = criptografia.descriptografarDeMeninoDoAcre({}, resultadoAlquimico, { tema: "alquimico" })
+var originalAlquimico = criptografia.descriptografarDeMeninoDoAcre(resultadoAlquimico, { "tema": "alquimico" })
 escreva(originalAlquimico)
 
 // Criptografar com tema híbrido (vogais → runas, consoantes → alquímicos)
-var resultadoHibrido = criptografia.criptografarEmMeninoDoAcre({}, texto, { tema: "hibrido" })
+var resultadoHibrido = criptografia.criptografarEmMeninoDoAcre(meuTexto, { "tema": "hibrido" })
 escreva(resultadoHibrido)
 
 // Descriptografar com tema híbrido
-var originalHibrido = criptografia.descriptografarDeMeninoDoAcre({}, resultadoHibrido, { tema: "hibrido" })
+var originalHibrido = criptografia.descriptografarDeMeninoDoAcre(resultadoHibrido, { "tema": "hibrido" })
 escreva(originalHibrido)
 ```
 
