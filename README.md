@@ -420,19 +420,12 @@ var chave = "chave123"
 var xorCifrado = criptografia.cifrarXor(texto, chave)
 escreva("Cifrado (hex): " + xorCifrado)
 escreva("Decifrado: " + criptografia.decifrarXor(xorCifrado, chave))
-
-// Comparação: segurança fraca vs. forte
-escreva("\n=== Comparação de Segurança ===")
-escreva("❌ Fraco (ROT13): Facilmente quebrável por inspeção")
-escreva("❌ Fraco (XOR simples): Vulnerável a análise de frequência")
-escreva("✅ Forte (AES-256): Padrão da indústria, altamente seguro")
-escreva("✅ Forte (RSA-2048): Seguro para criptografia assimétrica")
 ```
 
 ### Exemplo 9: Quebrando cifras clássicas (Análise Criptográfica) 🔓
 
 ```javascript
-const { rot13, rotN } = require('@designliquido/delegua-criptografia');
+const { rot13, rotN, cifrarXor } = require('@designliquido/delegua-criptografia');
 
 // Exemplo educacional: quebrar ROT-N por força bruta
 function quebrarRotN(textoCifrado) {
@@ -466,7 +459,6 @@ function analisarXor(textoCifradoHex) {
     console.log("Se você XOR um byte com 0x20, pode descobrir a chave!");
 }
 
-const { cifrarXor } = require('@designliquido/delegua-criptografia');
 const exemplo = cifrarXor(undefined, "teste teste teste", "k");
 analisarXor(exemplo);
 ```

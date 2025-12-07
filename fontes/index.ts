@@ -6,7 +6,6 @@
 export * from "./aes";
 export * from "./aleatorios";
 export * from "./base64";
-export * from "./comum";
 export * from "./educacionais";
 export * from "./hashes";
 export * from "./menino-do-acre";
