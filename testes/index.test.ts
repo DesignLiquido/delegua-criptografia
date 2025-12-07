@@ -156,6 +156,8 @@ describe('Criptografia AES-256', () => {
         expect(resultado).toHaveProperty('iv');
         expect(typeof resultado.textoCriptografado).toBe('string');
         expect(typeof resultado.iv).toBe('string');
+        // authTag não deve estar no retorno - está embutido no textoCriptografado
+        expect(resultado).not.toHaveProperty('authTag');
     });
 
     it('descriptografarAes256 deve recuperar texto original', async () => {
@@ -164,8 +166,7 @@ describe('Criptografia AES-256', () => {
             interpretadorDeMentirinha, 
             resultado.textoCriptografado,
             chave,
-            resultado.iv,
-            resultado.authTag
+            resultado.iv
         );
         expect(descriptografado).toBe(texto);
     });
@@ -182,6 +183,22 @@ describe('Criptografia AES-256', () => {
         expect(resultado1.iv).not.toBe(resultado2.iv);
         expect(resultado1.textoCriptografado).not.toBe(resultado2.textoCriptografado);
     });
+
+    it('API unificada - mesmo contrato em Node.js e navegador', async () => {
+        // Este teste verifica que não precisamos passar authTag separadamente
+        const resultado = await criptografarAes256(undefined, texto, chave);
+        
+        // Deve funcionar sem passar authTag (API unificada)
+        const descriptografado = await descriptografarAes256(
+            interpretadorDeMentirinha,
+            resultado.textoCriptografado,
+            chave,
+            resultado.iv
+            // Sem authTag - igual em ambos os ambientes!
+        );
+        
+        expect(descriptografado).toBe(texto);
+    });
 });
 
 describe('Criptografia RSA (RSA-OAEP)', () => {
@@ -196,14 +213,12 @@ describe('Criptografia RSA (RSA-OAEP)', () => {
 
     it('gerarParChavesRsa deve gerar par de chaves válido', async () => {
         const par = await gerarParChavesRsa(undefined, 2048);
-        // Em Node.js, as chaves são strings PEM
         if (typeof par.chavePublica === 'string') {
             expect(par.chavePublica).toContain('BEGIN PUBLIC KEY');
             expect(par.chavePublica).toContain('END PUBLIC KEY');
             expect(par.chavePrivada).toContain('BEGIN PRIVATE KEY');
             expect(par.chavePrivada).toContain('END PRIVATE KEY');
         } else {
-            // Em navegadores, são objetos CryptoKey com algoritmo RSA-OAEP
             expect(par.chavePublica).toBeTruthy();
             expect(par.chavePrivada).toBeTruthy();
             expect(par.chavePublica.algorithm.name).toBe('RSA-OAEP');
@@ -241,7 +256,6 @@ describe('Assinatura Digital RSA (RSA-PSS)', () => {
     let chavePrivada: any;
 
     beforeAll(async () => {
-        // Usa a função correta para gerar chaves de assinatura
         const par = await gerarParChavesRsaAssinatura(undefined, 2048);
         chavePublica = par.chavePublica;
         chavePrivada = par.chavePrivada;
@@ -249,14 +263,12 @@ describe('Assinatura Digital RSA (RSA-PSS)', () => {
 
     it('gerarParChavesRsaAssinatura deve gerar par de chaves válido', async () => {
         const par = await gerarParChavesRsaAssinatura(undefined, 2048);
-        // Em Node.js, as chaves são strings PEM (mesmo formato que RSA-OAEP)
         if (typeof par.chavePublica === 'string') {
             expect(par.chavePublica).toContain('BEGIN PUBLIC KEY');
             expect(par.chavePublica).toContain('END PUBLIC KEY');
             expect(par.chavePrivada).toContain('BEGIN PRIVATE KEY');
             expect(par.chavePrivada).toContain('END PRIVATE KEY');
         } else {
-            // Em navegadores, são objetos CryptoKey com algoritmo RSA-PSS
             expect(par.chavePublica).toBeTruthy();
             expect(par.chavePrivada).toBeTruthy();
             expect(par.chavePublica.algorithm.name).toBe('RSA-PSS');
@@ -306,17 +318,13 @@ describe('Assinatura Digital RSA (RSA-PSS)', () => {
 
 describe('Separação de chaves RSA-OAEP e RSA-PSS', () => {
     it('chaves RSA-OAEP não devem funcionar para assinatura em navegadores', async () => {
-        // Este teste só é relevante em navegadores
         const parCripto = await gerarParChavesRsa(undefined, 2048);
         
-        // Em Node.js, as chaves PEM funcionam para ambos (compatibilidade)
         if (typeof parCripto.chavePublica === 'string') {
-            // Node.js - pular este teste
             expect(true).toBe(true);
             return;
         }
         
-        // Em navegadores, deve lançar erro
         const texto = 'Teste';
         await expect(async () => {
             await assinarRsa(undefined, texto, parCripto.chavePrivada);
@@ -324,17 +332,13 @@ describe('Separação de chaves RSA-OAEP e RSA-PSS', () => {
     });
 
     it('chaves RSA-PSS não devem funcionar para criptografia em navegadores', async () => {
-        // Este teste só é relevante em navegadores
         const parAssinatura = await gerarParChavesRsaAssinatura(undefined, 2048);
         
-        // Em Node.js, as chaves PEM funcionam para ambos (compatibilidade)
         if (typeof parAssinatura.chavePublica === 'string') {
-            // Node.js - pular este teste
             expect(true).toBe(true);
             return;
         }
         
-        // Em navegadores, deve lançar erro (chaves RSA-PSS não têm 'encrypt' usage)
         const texto = 'Teste';
         await expect(async () => {
             await criptografarRsa(undefined, texto, parAssinatura.chavePublica);

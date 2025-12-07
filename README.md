@@ -2,16 +2,14 @@
 
 Biblioteca de criptografia para Delégua e JavaScript com nomes de métodos em português.
 
-Esta biblioteca encapsula funcionalidades do módulo `crypto` nativo do Node.js, oferecendo uma interface em português para facilitar o uso por desenvolvedores que programam em Delégua.
+Esta biblioteca oferece funcionalidades criptográficas unificadas que funcionam tanto em Node.js quanto em navegadores, com uma interface em português para facilitar o uso por desenvolvedores que programam em Delégua.
 
 ## Instalação
-
 ```bash
 npm install @designliquido/delegua-criptografia
 ```
 
 ## Uso com Delégua
-
 ```delegua
 var criptografia = importar('criptografia')
 
@@ -27,11 +25,12 @@ escreva(id)
 var textoBase64 = criptografia.codificarBase64("Texto secreto")
 escreva(textoBase64)
 
-// Criptografar com AES-256
+// Criptografar com AES-256-GCM
 var resultado = criptografia.criptografarAes256("mensagem secreta", "minha-chave-super-secreta-aqui!")
 escreva(resultado.textoCriptografado)
+escreva(resultado.iv)
 
-// Descriptografar com AES-256
+// Descriptografar com AES-256-GCM (mesma API em Node.js e navegador!)
 var textoOriginal = criptografia.descriptografarAes256(
     resultado.textoCriptografado,
     "minha-chave-super-secreta-aqui!",
@@ -43,26 +42,24 @@ escreva(textoOriginal)
 ## Uso com JavaScript/TypeScript
 
 ### CommonJS
-
 ```javascript
 const criptografia = require('@designliquido/delegua-criptografia');
 
 // Gerar hash SHA-256
-const hash = criptografia.sha256("Olá Mundo");
+const hash = await criptografia.sha256(undefined, "Olá Mundo");
 console.log(hash);
 
 // Gerar string aleatória
-const textoAleatorio = criptografia.gerarTextoAleatorio(16);
+const textoAleatorio = criptografia.gerarTextoAleatorio(undefined, 16);
 console.log(textoAleatorio);
 ```
 
 ### ES Modules
-
 ```typescript
 import { sha256, gerarUuid, criptografarAes256 } from '@designliquido/delegua-criptografia';
 
-// Gerar hash
-const hash = sha256("Olá Mundo");
+// Gerar hash (funções de hash são assíncronas)
+const hash = await sha256(undefined, "Olá Mundo");
 console.log(hash);
 
 // Gerar UUID
@@ -70,7 +67,7 @@ const id = gerarUuid();
 console.log(id);
 
 // Criptografar
-const resultado = criptografarAes256("dados sensíveis", "chave-secreta-32-caracteres!");
+const resultado = await criptografarAes256(undefined, "dados sensíveis", "chave-secreta-32-caracteres!");
 console.log(resultado);
 ```
 
@@ -78,110 +75,114 @@ console.log(resultado);
 
 ### Funções de Hash
 
-- **`md5(texto: string): string`**  
+- **`md5(interpretador: any, texto: string): string`**  
   Gera um hash MD5 (não recomendado para segurança, apenas para checksums)
 
-- **`sha1(texto: string): string`**  
+- **`sha1(interpretador: any, texto: string): Promise<string>`**  
   Gera um hash SHA-1
 
-- **`sha256(texto: string): string`**  
+- **`sha256(interpretador: any, texto: string): Promise<string>`**  
   Gera um hash SHA-256 (recomendado)
 
-- **`sha512(texto: string): string`**  
+- **`sha512(interpretador: any, texto: string): Promise<string>`**  
   Gera um hash SHA-512
 
 ### HMAC (Hash-based Message Authentication Code)
 
-- **`hmacSha256(texto: string, chave: string): string`**  
+- **`hmacSha256(interpretador: any, texto: string, chave: string): Promise<string>`**  
   Gera um HMAC usando SHA-256
 
-- **`hmacSha512(texto: string, chave: string): string`**  
+- **`hmacSha512(interpretador: any, texto: string, chave: string): Promise<string>`**  
   Gera um HMAC usando SHA-512
 
 ### Geração de Dados Aleatórios
 
-- **`gerarBytesAleatorios(tamanho: number): Buffer`**  
+- **`gerarBytesAleatorios(interpretador: any, tamanho: number): Uint8Array`**  
   Gera bytes aleatórios criptograficamente seguros
 
-- **`gerarTextoAleatorio(tamanho: number): string`**  
+- **`gerarTextoAleatorio(interpretador: any, tamanho: number): string`**  
   Gera um texto aleatório composto por caracteres hexadecimais
 
 - **`gerarUuid(): string`**  
   Gera um UUID versão 4
 
-- **`gerarSalt(tamanho?: number): string`**  
+- **`gerarSalt(interpretador?: any, tamanho?: number): string`**  
   Gera um salt para uso em derivação de chaves (padrão: 16 bytes)
 
 ### Codificação Base64
 
-- **`codificarBase64(texto: string): string`**  
+- **`codificarBase64(interpretador: any, texto: string): string`**  
   Codifica texto em Base64
 
-- **`decodificarBase64(textoBase64: string): string`**  
+- **`decodificarBase64(interpretador: any, textoBase64: string): string`**  
   Decodifica texto de Base64
 
-### Criptografia Simétrica (AES-256)
+### Criptografia Simétrica (AES-256-GCM)
 
-- **`criptografarAes256(texto: string, chave: string, vetorInicializacao?: Buffer): { textoCriptografado: string; iv: string }`**  
-  Criptografa texto usando AES-256-CBC. A chave deve ter 32 caracteres.
+- **`criptografarAes256(interpretador: any, texto: string, chave: string, vetorInicializacao?: Uint8Array): Promise<{ textoCriptografado: string; iv: string }>`**  
+  Criptografa texto usando AES-256-GCM (modo autenticado). A chave deve ter 32 caracteres. O authTag é automaticamente incluído no resultado.
 
-- **`descriptografarAes256(textoCriptografado: string, chave: string, iv: string): string`**  
-  Descriptografa texto usando AES-256-CBC
+- **`descriptografarAes256(interpretador: { resolverValor: (valor: any) => any }, textoCriptografado: string, chave: string, iv: string): Promise<string>`**  
+  Descriptografa texto usando AES-256-GCM. O authTag é automaticamente extraído do texto criptografado. API unificada para Node.js e navegadores.
 
 ### Criptografia Assimétrica (RSA)
 
-- **`gerarParChavesRsa(tamanhoModulo?: number): { chavePublica: string; chavePrivada: string }`**  
-  Gera um par de chaves RSA (padrão: 2048 bits)
+- **`gerarParChavesRsa(interpretador: any, tamanhoModulo?: number): Promise<{ chavePublica: any; chavePrivada: any }>`**  
+  Gera um par de chaves RSA-OAEP para criptografia/descriptografia (padrão: 2048 bits). Retorna strings PEM no Node.js e objetos CryptoKey em navegadores.
 
-- **`criptografarRsa(texto: string, chavePublica: string): string`**  
-  Criptografa texto usando chave pública RSA
+- **`gerarParChavesRsaAssinatura(interpretador: any, tamanhoModulo?: number): Promise<{ chavePublica: any; chavePrivada: any }>`**  
+  Gera um par de chaves RSA-PSS para assinatura digital (padrão: 2048 bits). **Use esta função para assinatura em navegadores**.
 
-- **`descriptografarRsa(textoCriptografado: string, chavePrivada: string): string`**  
-  Descriptografa texto usando chave privada RSA
+- **`criptografarRsa(interpretador: any, texto: string, chavePublica: any): Promise<string>`**  
+  Criptografa texto usando chave pública RSA-OAEP
 
-### Assinatura Digital
+- **`descriptografarRsa(interpretador: { resolverValor: (valor: any) => any }, textoCriptografado: string, chavePrivada: any): Promise<string>`**  
+  Descriptografa texto usando chave privada RSA-OAEP
 
-- **`assinarRsa(texto: string, chavePrivada: string): string`**  
-  Assina digitalmente um texto usando chave privada RSA
+### Assinatura Digital (RSA-PSS)
 
-- **`verificarAssinaturaRsa(texto: string, assinatura: string, chavePublica: string): boolean`**  
-  Verifica uma assinatura digital usando chave pública RSA
+- **`assinarRsa(interpretador: any, texto: string, chavePrivada: any): Promise<string>`**  
+  Assina digitalmente um texto usando chave privada RSA. **Em navegadores, use chaves geradas com `gerarParChavesRsaAssinatura()`**.
+
+- **`verificarAssinaturaRsa(interpretador: any, texto: string, assinatura: string, chavePublica: any): Promise<boolean>`**  
+  Verifica uma assinatura digital usando chave pública RSA. **Em navegadores, use chaves geradas com `gerarParChavesRsaAssinatura()`**.
 
 ### Derivação de Chaves
 
-- **`derivarChavePbkdf2(senha: string, sal: string, iteracoes?: number, tamanhoChave?: number): string`**  
+- **`derivarChavePbkdf2(interpretador: any, senha: string, sal: string, iteracoes?: number, tamanhoChave?: number): Promise<string>`**  
   Deriva uma chave a partir de uma senha usando PBKDF2 (padrão: 100.000 iterações, 32 bytes)
 
 ## Exemplos Completos
 
 ### Exemplo 1: Hash de senha com salt
-
 ```javascript
 const { sha256, gerarSalt } = require('@designliquido/delegua-criptografia');
 
 const senha = "minha_senha_123";
-const sal = gerarSalt();
-const senhaHash = sha256(senha + sal);
+const sal = gerarSalt(undefined);
+const senhaHash = await sha256(undefined, senha + sal);
 
 console.log("Salt:", sal);
 console.log("Hash:", senhaHash);
 ```
 
-### Exemplo 2: Criptografia simétrica AES-256
-
+### Exemplo 2: Criptografia simétrica AES-256-GCM
 ```javascript
 const { criptografarAes256, descriptografarAes256 } = require('@designliquido/delegua-criptografia');
+
+const interpretador = { resolverValor: (v) => v };
 
 const mensagem = "Dados muito secretos";
 const chave = "minha-chave-super-secreta-aqui!"; // 32 caracteres
 
 // Criptografar
-const resultado = criptografarAes256(mensagem, chave);
+const resultado = await criptografarAes256(undefined, mensagem, chave);
 console.log("Criptografado:", resultado.textoCriptografado);
 console.log("IV:", resultado.iv);
 
-// Descriptografar
-const mensagemOriginal = descriptografarAes256(
+// Descriptografar - mesma API em Node.js e navegador!
+const mensagemOriginal = await descriptografarAes256(
+    interpretador,
     resultado.textoCriptografado,
     chave,
     resultado.iv
@@ -189,8 +190,7 @@ const mensagemOriginal = descriptografarAes256(
 console.log("Descriptografado:", mensagemOriginal);
 ```
 
-### Exemplo 3: Criptografia assimétrica RSA
-
+### Exemplo 3: Criptografia assimétrica RSA (Node.js e Navegador)
 ```javascript
 const { 
     gerarParChavesRsa, 
@@ -198,63 +198,109 @@ const {
     descriptografarRsa 
 } = require('@designliquido/delegua-criptografia');
 
-// Gerar par de chaves
-const { chavePublica, chavePrivada } = gerarParChavesRsa(2048);
+const interpretador = { resolverValor: (v) => v };
+
+// Gerar par de chaves para CRIPTOGRAFIA
+const { chavePublica, chavePrivada } = await gerarParChavesRsa(undefined, 2048);
 
 const mensagem = "Mensagem confidencial";
 
 // Criptografar com chave pública
-const criptografado = criptografarRsa(mensagem, chavePublica);
+const criptografado = await criptografarRsa(undefined, mensagem, chavePublica);
 console.log("Criptografado:", criptografado);
 
 // Descriptografar com chave privada
-const descriptografado = descriptografarRsa(criptografado, chavePrivada);
+const descriptografado = await descriptografarRsa(interpretador, criptografado, chavePrivada);
 console.log("Descriptografado:", descriptografado);
 ```
 
-### Exemplo 4: Assinatura digital
-
+### Exemplo 4: Assinatura digital (Node.js e Navegador)
 ```javascript
 const { 
-    gerarParChavesRsa, 
+    gerarParChavesRsaAssinatura,  // Use esta função para assinatura!
     assinarRsa, 
     verificarAssinaturaRsa 
 } = require('@designliquido/delegua-criptografia');
 
-const { chavePublica, chavePrivada } = gerarParChavesRsa();
+// Gerar par de chaves para ASSINATURA
+const { chavePublica, chavePrivada } = await gerarParChavesRsaAssinatura(undefined, 2048);
 
 const documento = "Contrato importante";
 
 // Assinar documento
-const assinatura = assinarRsa(documento, chavePrivada);
+const assinatura = await assinarRsa(undefined, documento, chavePrivada);
 console.log("Assinatura:", assinatura);
 
 // Verificar assinatura
-const valida = verificarAssinaturaRsa(documento, assinatura, chavePublica);
+const valida = await verificarAssinaturaRsa(undefined, documento, assinatura, chavePublica);
 console.log("Assinatura válida:", valida); // true
 
 // Tentar verificar com documento alterado
 const documentoAlterado = "Contrato importante modificado";
-const validaAlterado = verificarAssinaturaRsa(documentoAlterado, assinatura, chavePublica);
+const validaAlterado = await verificarAssinaturaRsa(undefined, documentoAlterado, assinatura, chavePublica);
 console.log("Assinatura válida (alterado):", validaAlterado); // false
 ```
 
 ### Exemplo 5: Derivação de chave com PBKDF2
-
 ```javascript
 const { derivarChavePbkdf2, gerarSalt } = require('@designliquido/delegua-criptografia');
 
 const senha = "senha_do_usuario";
-const sal = gerarSalt();
+const sal = gerarSalt(undefined);
 
 // Derivar chave da senha
-const chaveDerivada = derivarChavePbkdf2(senha, sal, 100000, 32);
+const chaveDerivada = await derivarChavePbkdf2(undefined, senha, sal, 100000, 32);
 
 console.log("Salt:", sal);
 console.log("Chave derivada:", chaveDerivada);
 
 // Essa chave pode ser usada para criptografia AES-256
 ```
+
+### Exemplo 6: Uso completo em Delégua
+```delegua
+var criptografia = importar('criptografia')
+
+// Criptografia e descriptografia
+var resultado = criptografia.criptografarAes256("mensagem secreta", "minha-chave-super-secreta-aqui!")
+escreva("Criptografado: " + resultado.textoCriptografado)
+
+var textoOriginal = criptografia.descriptografarAes256(
+    resultado.textoCriptografado,
+    "minha-chave-super-secreta-aqui!",
+    resultado.iv
+)
+escreva("Descriptografado: " + textoOriginal)
+
+// Assinatura digital - usar gerarParChavesRsaAssinatura em navegadores
+var parAssinatura = criptografia.gerarParChavesRsaAssinatura(2048)
+var documento = "Contrato importante"
+var assinatura = criptografia.assinarRsa(documento, parAssinatura.chavePrivada)
+var valida = criptografia.verificarAssinaturaRsa(documento, assinatura, parAssinatura.chavePublica)
+escreva("Assinatura válida: " + valida)
+```
+
+## Compatibilidade entre Ambientes
+
+Esta biblioteca foi projetada para funcionar de forma **unificada** em Node.js e navegadores:
+
+### Node.js
+- Usa o módulo `crypto` nativo
+- Retorna chaves RSA como strings PEM
+- Suporta todos os algoritmos nativamente
+
+### Navegadores
+- Usa a Web Crypto API (`crypto.subtle`)
+- Retorna chaves RSA como objetos `CryptoKey`
+- **Importante**: RSA-OAEP (criptografia) e RSA-PSS (assinatura) usam chaves diferentes
+  - Use `gerarParChavesRsa()` para criptografia/descriptografia
+  - Use `gerarParChavesRsaAssinatura()` para assinatura/verificação
+
+### API Unificada AES-256-GCM
+A criptografia AES-256 tem **API idêntica** em ambos os ambientes:
+- O `authTag` é automaticamente incluído no `textoCriptografado`
+- Não é necessário passar o `authTag` separadamente
+- Mesma função e mesmos parâmetros em Node.js e navegadores
 
 ## Segurança
 
@@ -266,14 +312,17 @@ console.log("Chave derivada:", chaveDerivada);
 - Chaves AES-256 devem ter **exatamente 32 caracteres** (256 bits)
 - Nunca compartilhe chaves privadas RSA
 - Use **HMAC** quando precisar verificar a integridade e autenticidade de mensagens
+- **AES-256-GCM** é mais seguro que CBC pois fornece autenticação integrada
+- Em navegadores, **sempre use funções separadas** para gerar chaves de criptografia vs. assinatura
 
 ## Estrutura do Projeto
-
 ```
 delegua-criptografia/
 ├── fontes/
-    ├── delegua-modulo.ts  # Manifesto do módulo, usado pelo núcleo e ferramentas para entender tipos e documentação
+│   ├── delegua-modulo.ts  # Manifesto do módulo
 │   └── index.ts           # Código principal
+├── testes/
+│   └── index.test.ts      # Testes unitários
 ├── dist/                  # Arquivos compilados (gerados)
 ├── package.json
 ├── tsconfig.json

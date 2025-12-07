@@ -168,14 +168,15 @@ export const DeleguaModuloCriptografia = {
         ],
         documentacao:
             `# \`criptografia.criptografarAes256(texto, chave)\`\n\n` +
-            'Criptografa um texto usando AES-256-CBC.\n' +
+            'Criptografa um texto usando AES-256-GCM (modo autenticado).\n' +  // Changed: CBC → GCM
+            'O authTag é automaticamente incluído no resultado para garantir segurança em ambos os ambientes.\n\n' +  // Added
             '\n\n ## Exemplo de Código\n' +
             '\n\n```delegua\n' +
             'var criptografia = importar("criptografia")\n' +
             'var texto = "Mensagem secreta"\n' +
-            'var chave = "minha-chave-super-secreta-aqui!"\n' +
+            'var chave = "minha-chave-super-secreta-aqui!" // 32 caracteres\n' +
             `var resultado = criptografia.criptografarAes256(texto, chave)\n` +
-            `escreva(resultado.textoCriptografado) // Texto criptografado\n` +
+            `escreva(resultado.textoCriptografado) // Texto criptografado (com authTag embutido)\n` +  // Changed
             `escreva(resultado.iv) // Vetor de inicialização\n` +
             '```\n',
         exemploCodigo: 'criptografia.criptografarAes256("Mensagem secreta", "chave-de-32-caracteres-exatos!")'
@@ -190,13 +191,21 @@ export const DeleguaModuloCriptografia = {
         ],
         documentacao:
             `# \`criptografia.descriptografarAes256(textoCriptografado, chave, iv)\`\n\n` +
-            'Descriptografa um texto criptografado com AES-256-CBC.\n' +
+            'Descriptografa um texto criptografado com AES-256-GCM.\n' +  // Changed: CBC → GCM
+            'O authTag é automaticamente extraído do texto criptografado - não é necessário passá-lo separadamente.\n' +  // Added
+            'API unificada: funciona identicamente em Node.js e navegadores.\n\n' +  // Added
             '\n\n ## Exemplo de Código\n' +
             '\n\n```delegua\n' +
             'var criptografia = importar("criptografia")\n' +
             'var chave = "minha-chave-super-secreta-aqui!"\n' +
             'var resultado = criptografia.criptografarAes256("Mensagem secreta", chave)\n' +
-            `var descriptografado = criptografia.descriptografarAes256(resultado.textoCriptografado, chave, resultado.iv)\n` +
+            '\n' +  // Added line break for clarity
+            '// Descriptografar - mesma API em Node.js e navegador!\n' +  // Added
+            `var descriptografado = criptografia.descriptografarAes256(\n` +  // Changed: multiline
+            `    resultado.textoCriptografado,\n` +
+            `    chave,\n` +
+            `    resultado.iv\n` +
+            `)\n` +
             `escreva(descriptografado) // "Mensagem secreta"\n` +
             '```\n',
         exemploCodigo: 'criptografia.descriptografarAes256(textoCriptografado, chave, iv)'
