@@ -2,8 +2,8 @@
   "name": "@designliquido/delegua-criptografia",
   "version": "0.3.4",
   "description": "Biblioteca de criptografia para Delégua e JavaScript com nomes de métodos em português",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "index.js",
+  "types": "index.d.ts",
   "scripts": {
     "empacotar": "yarn rimraf ./dist && tsc && yarn copyfiles -V ./README.md ./dist && yarn copyfiles -V ./package.json ./dist",
     "lint": "eslint fontes/**/*.ts",
